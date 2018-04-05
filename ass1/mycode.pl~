@@ -1,0 +1,221 @@
+% Kevin Luo
+% z5061845
+% COMP3411 AI
+% Started: 17th March
+% Q1 Completed: 18th March
+% Q2 Completed: 18th March
+% Q3 Completed: 22nd March
+% Q4 Completed:
+% Q5 Completed:
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             Question 1                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+remove_pos([],[]).
+remove_pos([Head|Tail],Sum) :-
+  Head>=0,
+  remove_pos(Tail,Sum).
+remove_pos([Head|Tail],[Head|Sum]) :-
+  remove_pos(Tail,Sum).
+
+
+sum_sq([], 0).
+sum_sq([X], Ret):-         % assuming we have already removed pos
+  Ret is (X * X).
+sum_sq([Item], Item * Item).
+sum_sq([Head | Tail], Tas) :-
+    sum_sq(Tail, Tmp),
+Tas is (Head * Head) + (Tmp).
+
+sumsq_neg(List, Result):-
+  remove_pos(List, Pos_list),
+  sum_sq(Pos_list, Result).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             Question 2                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% testing only
+%likes(mary, apple).
+%likes(mary, pear).
+%likes(mary, grapes).
+%likes(tim, mango).
+%likes(tim, apple).
+%likes(jane, apple).
+%likes(jane, mango).
+
+
+xlikes(_, []).
+xlikes(X, [H2|T2]):-
+  likes(X,H2),
+  xlikes(X, T2).
+
+%all_like_all([people], Fruits):-
+all_like_all(_, []).
+all_like_all([], _).
+all_like_all([H1|T1], Fruits):-
+  xlikes(H1, Fruits),
+  all_like_all(T1, Fruits).
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             Question 3                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Returns the num and its sqrt
+sqrt_pair(Num, [Num, Result]):-
+    Result is sqrt(Num).
+
+
+% returns sqr for a given list
+recursive_sqr([], []).
+recursive_sqr([H|T], [Result|Sum]):-
+  sqrt_pair(H, Result),
+  recursive_sqr(T, Sum).
+
+
+% generates nums from N -> M where N >= M
+% result is a list
+high_low(M, M, [M]).
+high_low(N, M, [N|T]):-
+  N >= M,
+  N1 is N-1,
+  high_low(N1, M, T).
+
+sqrt_table(N, M, Result):-
+  high_low(N, M, Gen_nums),
+  recursive_sqr(Gen_nums, Result).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             Question 4                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% %checks if two numbers are successively increasing
+% if_succ(A, [H|_]):-
+%   write(A),
+%   write(" == "),
+%   write(H),
+%   write("\n"),
+%   (A+1) =:= H.
+%
+% chop_up([], []).                            % default
+% chop_up([X], [X]).
+%
+% chop_up([H|T], [H|T]):-                   % if next value is succ, we go to iter with start var
+%   if_succ(H, T),
+%   write("is succ\n"),
+%   chop_up(T, H, _).
+%
+% chop_up([H|T], [H | Result]):-                      % if next value is NOT succ
+%   write("is NOT succ\n"),
+%   chop_up(T, Result).
+%
+% chop_up([H|T], Start, [H|Return]):-            % iter with start var
+%   if_succ(H, T),
+%   write("is succ start\n"),
+%   chop_up(T, Start, Return).
+%
+% chop_up([H|T], Start, [[Start | H] | Result]):-       % if iter with start var next value is NOT succ
+%   write("is NOT succ start\n"),
+%   chop_up(T, _, Result).
+
+
+last([], []).
+last([X], X).
+last([_, H2 | []], H2).
+last([H1, H2 | T], X):-
+  H1 + 1 =:= H2,
+  last(T, X).
+
+first([], []).
+first([X], X).
+first([H | _], H).
+
+% concat List -> [First, Last] || [Single]
+concat([], []).
+concat([X], X).
+concat(List, [First, Last]):-
+  first(List, First),
+  last(List, Last).
+
+succ_remainder([X], [X], []).
+succ_remainder([H1, H2 | Rmdr], [H1], [H2 | Rmdr]):-
+  H1 + 1 =\= H2.
+succ_remainder([H1, H2 | T], [H1 | Succ], Rmdr):-
+  H1 + 1 =:= H2,
+  succ_remainder([H2 | T], Succ, Rmdr).
+
+
+
+% then we take the consec list and keep only first n last -> last_consec
+
+chop_up([], []).
+chop_up([X], [X]).
+chop_up(List, [Concated | Chopped]):-
+
+  succ_remainder(List, Succ, Rest),
+  concat(Succ, Concated),
+
+  % write("List -> "),
+  % write(List),
+  % write("\n"),
+  % write("Succ -> "),
+  % write(Succ),
+  % write("\n"),
+  % write("Rest -> "),
+  % write(Rest),
+  % write("\n"),
+  % write("Concated -> "),
+  % write(Concated),
+  % write("\nLoop\n"),
+
+  chop_up(Rest, Chopped).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             Question 5                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% given two tree(empty,z,empty) where z can be a var or predefined
+% and an operator
+% calculate result into Ret
+
+% op_leaf([], []).
+% op_leaf([X], getNum(X)).
+%m
+
+% we dont care about value
+tree_eval(Value, tree(empty, z, empty), Value).
+tree_eval(_, tree(empty, Num, empty), Num).
+tree_eval(Value, tree(L, Op, R), Eval):-
+  tree_eval(Value, L, L_eval),
+  tree_eval(Value, R, R_eval),
+  Expression =.. [Op, L_eval, R_eval],         % kind of generic?
+  Eval is Expression.
+
+
+
+
+
+%-----------------------------------------
+% Unused Helper functions
+
+% sum([], 0).
+% sum([Item], Item).
+% sum([Head | Tail], TotalSum) :-
+%     sum(Tail, Sum1),
+% TotalSum is Head + Sum1.
+%
+%
+% mul([], 0).
+% mul([Item], Item).
+% mul([Head | Tail], TotalMul) :-
+%     mul(Tail, Mul1),
+% TotalMul is Head * Mul1.
