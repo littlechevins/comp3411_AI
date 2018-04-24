@@ -1,0 +1,117 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}    % need for subequations
+\usepackage{graphicx}   % need for figures
+\usepackage{verbatim}   % useful for program listings
+\usepackage{color}      % use if color is used in text
+\usepackage{subfigure}  % use for side-by-side figures
+\usepackage{hyperref}   % use for hypertext links, including those to external documents and URLs
+
+\usepackage{listings}
+\lstset{numbers=left,
+emph={%
+   {:-}%
+     },emphstyle={\color{red}\bfseries\underbar}%
+}%
+
+% don't need the following. simply use defaults
+\setlength{\baselineskip}{16.0pt}    % 16 pt usual spacing between lines
+
+\setlength{\parskip}{3pt plus 2pt}
+\setlength{\parindent}{20pt}
+\setlength{\oddsidemargin}{0.5cm}
+\setlength{\evensidemargin}{0.5cm}
+\setlength{\marginparsep}{0.75cm}
+\setlength{\marginparwidth}{2.5cm}
+\setlength{\marginparpush}{1.0cm}
+\setlength{\textwidth}{150mm}
+
+\begin{comment}
+\pagestyle{empty} % use if page numbers not wanted
+\end{comment}
+
+% above is the preamble
+
+\begin{document}
+
+\begin{center}
+{\large Introduction to \LaTeX} \\ % \\ = new line
+\copyright 2006 by Harvey Gould \\
+December 5, 2006
+\end{center}
+
+\section{Question 1: Search algorithms for 15-puzzle}
+
+\subsection{}
+
+\begin{table}[h]
+\centering
+\caption{States expanded}
+\label{my-label}
+\begin{tabular}{llllll}
+     & start10 & start12 & start20 & start30 & start40 \\
+UCS  & 2565    & Mem     & Mem     & Mem     & Mem     \\
+IDS  & 2407    & 13812   & 5297410 & Time    & Time    \\
+A*   & 33      & 26      & 915     & Mem     & Mem     \\
+IDA* & 29      & 21      & 952     & 17297   & 186115
+\end{tabular}
+\end{table}
+
+\subsection{}
+It is clear that IDA* is the most efficient in terms of time and memory usage, due to it being the only one to be able to calculate past start30.\\\\
+A* has a very similar time to IDA* up to start20, afterwards, its memory usage blows up and is unable to calculate larger values.\\\\
+IDS is much slower than the rest, it has a very slow caluclation time but its memory size is contained, as in, it does not blow up like UCS or A*.\\\\
+UCS is the worst algorithm due to its bad search times but especially due it to its hugh memory usage.\\\\
+
+
+
+
+\section{Heuristic Path Search}
+
+\subsection{}
+
+\begin{table}[h]
+\centering
+\caption{Search Path}
+\label{my-label}
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+                                                        & \multicolumn{2}{l|}{start50}                                                                                            & \multicolumn{2}{l|}{start60}                                                                                          & \multicolumn{2}{l|}{start64}                                                                                              \\ \hline
+IDA*                                                    & 50                                                    & 14642512                                                        & 60                                                    & 321252368                                                     & 64                                                    & 1209086782                                                        \\ \hline
+\begin{tabular}[c]{@{}l@{}}1.2\\ 1.4\\ 1.6\end{tabular} & \begin{tabular}[c]{@{}l@{}}52\\ 66\\ 100\end{tabular} & \begin{tabular}[c]{@{}l@{}}191438\\ 116174\\ 34647\end{tabular} & \begin{tabular}[c]{@{}l@{}}62\\ 82\\ 148\end{tabular} & \begin{tabular}[c]{@{}l@{}}230861\\ 3673\\ 55626\end{tabular} & \begin{tabular}[c]{@{}l@{}}66\\ 94\\ 162\end{tabular} & \begin{tabular}[c]{@{}l@{}}431033\\ 188917\\ 2358520\end{tabular} \\ \hline
+Greedy                                                  & 164                                                   & 5447                                                            & 166                                                   & 1617                                                          & 184                                                   & 2174                                                              \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{}
+
+\lstinputlisting{2b.pl}\\
+Line removed is line (10) and the lines added are (11-12). These introduce a new var W, and is used to modify F1 depending on the equation given.\\
+
+\subsection{}
+Refer to table in 2.1
+
+\subsection{}
+Discuss tradeoff between speed and quality of solution for these 5 algorithms
+
+\section{Maze Search Heuristics}
+\subsection{}
+Manhattan heuristic
+\begin{gather*}
+  h(x,y,x_G,y_G)= |x-x_G| + |y-y_G|
+\end{gather*}
+
+\subsection{}
+\subsubsection{}
+Yes. The heuristic is now equal to the actual cost but the only requirement of an admissable heuristic in search problems is that it cannot overestimate the cost of reaching the goal. In fact, we have acheived a perfect heuristic.
+\subsubsection{}
+No. The Manhattan heuristic is no longer admissable in the case of diagonal movement due to the pythagoras theorem - the root of the two squared sides is longer than the hypothenus.
+\subsubsection{}
+Chebyshev distance
+\begin{gather*}
+  h(x,y,x_G,y_G)= max(|x-x_G|, |y-y_G|)
+\end{gather*}
+
+\section{Graph Paper Grand Prix}
+
+\end{document}

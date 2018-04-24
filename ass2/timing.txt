@@ -1,0 +1,4 @@
+statistics(runtime,[Start|_]),
+start50(Pos),solve(Pos,Sol,G,N),showsol(Sol),
+statistics(runtime,[Stop|_]),
+Runtime is Stop - Start.
