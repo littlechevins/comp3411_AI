@@ -6,7 +6,14 @@
 \usepackage{color}      % use if color is used in text
 \usepackage{subfigure}  % use for side-by-side figures
 \usepackage{hyperref}   % use for hypertext links, including those to external documents and URLs
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 
+\usepackage{blindtext}
+\usepackage{enumitem}
+\usepackage{xcolor}
 \usepackage{listings}
 \lstset{numbers=left,
 emph={%
@@ -35,9 +42,8 @@ emph={%
 \begin{document}
 
 \begin{center}
-{\large Introduction to \LaTeX} \\ % \\ = new line
-\copyright 2006 by Harvey Gould \\
-December 5, 2006
+{\large COMP3411 : Assignment 2} \\ % \\ = new line
+Kevin Luo z5061845 \\
 \end{center}
 
 \section{Question 1: Search algorithms for 15-puzzle}
@@ -58,13 +64,16 @@ IDA* & 29      & 21      & 952     & 17297   & 186115
 \end{table}
 
 \subsection{}
-It is clear that IDA* is the most efficient in terms of time and memory usage, due to it being the only one to be able to calculate past start30.\\\\
-A* has a very similar time to IDA* up to start20, afterwards, its memory usage blows up and is unable to calculate larger values.\\\\
-IDS is much slower than the rest, it has a very slow caluclation time but its memory size is contained, as in, it does not blow up like UCS or A*.\\\\
-UCS is the worst algorithm due to its bad search times but especially due it to its hugh memory usage.\\\\
+
+\begin{description}[font=$\bullet$\scshape\bfseries]
+  \item [UCS] UCS is the worst algorithm. It exceeded its memory at start12. \textbf{Slow}
+  \item [IDS] This performed slightly better than UCS but its memory also grew exponetially. However it never ran out of memory, instead its time expired. \textbf{Slow}
+  \item [A*] A* has a very similar time to IDA* up to start20, afterwards, its memory usage blows up and is unable to calculate larger values. \textbf{Medium Speed}
+  \item [IDA*] It is clear that IDA* is the most efficient in terms of time and memory usage, due to it being the only one to be able to calculate past start30. \textbf{Medium Speed}
+\end{description}
 
 
-
+\newpage
 
 \section{Heuristic Path Search}
 
@@ -92,7 +101,16 @@ Line removed is line (10) and the lines added are (11-12). These introduce a new
 Refer to table in 2.1
 
 \subsection{}
-Discuss tradeoff between speed and quality of solution for these 5 algorithms
+\begin{description}[font=$\bullet$\scshape\bfseries]
+  \item [IDA*] Slowest algorithm by far. It only adds the cost of the heuristic. Has quickest path.
+  \item [1.2] We implemented the Heuristic Path Search with an Iterative Deepening solution. It is able to generate the graph fairly quickly while its solution is just below optimal.
+  \item [1.4] Same as above, runs faster than 1.2 and has fewer nodes expanded but its solution is no longer optimal.
+  \item [1.6] Same as 1.2, with even fewer nodes expanded but has very bad optimal path.
+  \item [Greedy] Fastest solution while generating the least amount of nodes but it resulted in the longest path solution.
+  \item [Outlier] start60 produced some weird solutions where the nodes expanded were less than their start 50 cousins.
+\end{description}
+
+
 
 \section{Maze Search Heuristics}
 \subsection{}
@@ -103,7 +121,21 @@ Manhattan heuristic
 
 \subsection{}
 \subsubsection{}
-Yes. The heuristic is now equal to the actual cost but the only requirement of an admissable heuristic in search problems is that it cannot overestimate the cost of reaching the goal. In fact, we have acheived a perfect heuristic.
+No, a heuristic must always underestimate or be equal to the cost of a goal. Below is a counter example where the quickest route with diagonal movement is 2 moves but the straight line heuristic gives:
+\begin{align*}
+  \sqrt{2^2 + 1^2} = \sqrt{5} = 2.23
+\end{align*}
+\begin{table}[h]
+\centering
+\caption{Counter example}
+\label{my-label}
+\begin{tabular}{|l|l|l|}
+\hline
+  &  & G \\ \hline
+S &  &   \\ \hline
+\end{tabular}
+\end{table}
+
 \subsubsection{}
 No. The Manhattan heuristic is no longer admissable in the case of diagonal movement due to the pythagoras theorem - the root of the two squared sides is longer than the hypothenus.
 \subsubsection{}
@@ -112,10 +144,12 @@ Chebyshev distance
   h(x,y,x_G,y_G)= max(|x-x_G|, |y-y_G|)
 \end{gather*}
 
+\newpage
+
 \section{Graph Paper Grand Prix}
 
 \subsection{}
-\begin{table}[]
+\begin{table}[h]
 \centering
 \caption{My caption}
 \label{my-label}
@@ -123,27 +157,66 @@ Chebyshev distance
 \hline
 n  & Sequence & Number of actions \\ \hline
 1  &  +-      & 2                 \\ \hline
-2  &  +o -    &                   \\ \hline
-3  &  +oo-    &                   \\ \hline
-4  &  ++--    &                   \\ \hline
-5  &  ++-o-   &                   \\ \hline
-6  &  ++o--   &                   \\ \hline
+2  &  +o-    & 3                  \\ \hline
+3  &  +oo-    & 4                   \\ \hline
+4  &  ++- -    & 4                  \\ \hline
+5  &  ++-o-   & 5                  \\ \hline
+6  &  ++o- -   & 5                  \\ \hline
 7  &  ++o-o-  & 6         \\ \hline
-8  &  ++oo--  &                   \\ \hline
-9  &  +++---  &                   \\ \hline
-10 &  +++-oo- &                   \\ \hline
-11 &  +++-o-- &                   \\ \hline
-12 &  +++o--  &                   \\ \hline
-13 &  +++o--o-  &                   \\ \hline
-14 &  +++o-o--  &                   \\ \hline
-15 &  +++oo---  &                   \\ \hline
-16 &  ++++----  &                   \\ \hline
-17 &  ++++---o-         &                   \\ \hline
-18 &  ++++--o--        &                   \\ \hline
-19 &  ++++-o---         &                   \\ \hline
-20 &  ++++o----         &                   \\ \hline
-21 &  ++++o---o-        &                   \\ \hline
+8  &  ++oo- -  & 6                  \\ \hline
+9  &  +++- - -  & 6                  \\ \hline
+10 &  +++- -o- & 7                  \\ \hline
+11 &  +++-o- - & 7                  \\ \hline
+12 &  +++o- - -  & 7                  \\ \hline
+13 &  +++o- -o-  & 8                  \\ \hline
+14 &  +++o-o- -  & 8                  \\ \hline
+15 &  +++oo- - -  & 8                  \\ \hline
+16 &  ++++- - - -  & 8                  \\ \hline
+17 &  ++++- - -o-         & 9                  \\ \hline
+18 &  ++++- -o- -        & 9                  \\ \hline
+19 &  ++++-o- - -         & 9                  \\ \hline
+20 &  ++++o- - - -         & 9                  \\ \hline
+21 &  ++++o- - -o-        & 10                  \\ \hline
 \end{tabular}
 \end{table}
+\subsection{}
+Let Number of Actions (NoA) from the table above be the length of the sequence. NoA follows the given identity where $s$ is the maximum speed - number of $+$. This holds true for $s(s+1)$ no matter how many $o$'s (rests) are present. We then have the identity $s^2$ for the rest of the sequences, ie when n is a perfect square.
+
+\subsection{}
+
+We start with some velocity $k\geq 0$ and a destination $n$ such that $n \geq \frac{k(k-1)}{2}$. We then have that the deceleration time for $M(n,0)$ would be the total distance up to some $x$, minus the time it too to accelerate to k:
+
+\begin{align*}
+  M(x,0) = \lceil 2\sqrt{x} \rceil - k
+\end{align*}
+
+We have that x is the total distance to accelerate to k.
+
+\begin{align*}
+  \frac{k(k+1)}{2} + n
+\end{align*}
+
+Substituting into the original at $x,k$, we have:
+\begin{align*}
+  M(n, k) = \ceil[\bigg]{2\sqrt{n + \frac{k(k+1)}{2}}} - k\\
+\end{align*}
+
+\subsection{}
+Similar to 4.3, we have some velocity $k\geq 0$ but a destination $n$ such that $n < \frac{k(k-1)}{2}$. Our destination has extended over the goal and we have to reverse back towards G. We have $x>n$ such that \\$M(n,k) =$ time extended past goal + time to reverse - time to accelerate (k).\\ This gives us:
+
+\begin{align*}
+  M(n, k) = & \ceil[\bigg]{2\sqrt{\frac{k(k+1)}{2} + \frac{k(k-1)}{2}}} + \ceil[\bigg]{2\sqrt{\frac{k(k-1)}{2} - n}} - k\\
+  M(n, k) = & \ceil[\bigg]{2\sqrt{\frac{k(k-1)}{2}}} + k
+\end{align*}
+
+\subsection{}
+Similarly to the Chebyshev distance but without the absolute values since we can have negative acceleration
+, we have:
+\begin{align*}
+  h(r,c,u,v,r_G,c_G) = \mbox{max}(M(r_G - r, u),M(c_G-c, v))
+\end{align*}
+
+where M is the equation from 4.3
+
 
 \end{document}
