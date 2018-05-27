@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # ^^ note the python directive on the first line
-# COMP 9414 agent initiation file 
+# COMP 9414 agent initiation file
 # requires the host is running before the agent
 # designed for python 3.6
 # typical initiation would be (file in working directory, port = 31415)
@@ -11,13 +11,48 @@
 import sys
 import socket
 
+import map2
+
 # declaring visible grid to agent
 view = [['' for _ in range(5)] for _ in range(5)]
+maps = map2.Map()
+isInit = 0
+# pos = [0,0]
 
 # function to take get action from AI or user
-def get_action(view):
+def get_action(view, lastAction):
 
     ## REPLACE THIS WITH AI CODE TO CHOOSE ACTION ##
+    global isInit
+    global pos
+
+    print("last action:" + lastAction + ":")
+
+
+
+    # # just assume we are always facing north
+    # if(lastAction == 'f'):
+    #     pos[0] = pos[0] + 1
+
+
+    # if(isInit == 0):
+    #     maps.map_init(maps.removeChararacter(view))
+    #     isInit = 1
+
+    maps.mov_update(lastAction)
+    print("UPDATING MOVE END")
+
+    print("UPDATING VIEW")
+
+    maps.map_update(view)
+    print("UPDATING MOVE")
+
+
+    print("Last action:" + lastAction)
+
+    print("--------------------My Map--------------------")
+    maps.print_map()
+    print("---------------------END--------------------")
 
     # input loop to take input from user (only returns if this is valid)
     while 1:
@@ -39,7 +74,10 @@ def print_grid(view):
 
 if __name__ == "__main__":
 
-    # checks for correct amount of arguments 
+    # pos[0] = 0
+    # pos[1] = 0
+
+    # checks for correct amount of arguments
     if len(sys.argv) != 3:
         print("Usage Python3 "+sys.argv[0]+" -p port \n")
         sys.exit(1)
@@ -64,6 +102,7 @@ if __name__ == "__main__":
     # navigates through grid with input stream of data
     i=0
     j=0
+    lastAction = ''
     while 1:
         data=sock.recv(100)
         if not data:
@@ -72,7 +111,7 @@ if __name__ == "__main__":
             if (i==2 and j==2):
                 view[i][j] = '^'
                 view[i][j+1] = chr(ch)
-                j+=1 
+                j+=1
             else:
                 view[i][j] = chr(ch)
             j+=1
@@ -81,7 +120,7 @@ if __name__ == "__main__":
                 i=(i+1)%5
         if j==0 and i==0:
             print_grid(view) # COMMENT THIS OUT ON SUBMISSION
-            action = get_action(view) # gets new actions
+            lastAction = action = get_action(view, lastAction) # gets new actions
             sock.send(action.encode('utf-8'))
 
     sock.close()

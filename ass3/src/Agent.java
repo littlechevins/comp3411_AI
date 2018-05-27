@@ -1,5 +1,5 @@
 /*********************************************
- *  Agent.java 
+ *  Agent.java
  *  Sample Agent for Text-Based Adventure Game
  *  COMP3411/9414/9814 Artificial Intelligence
  *  UNSW Session 1, 2018
@@ -34,6 +34,12 @@ public class Agent {
     catch (IOException e) {
       System.out.println ("IO error:" + e );
     }
+
+    map = Map()
+
+    # we remove the character that displays player location
+    map.map_init(map.removeChararacter(init))
+
 
     return 0;
   }

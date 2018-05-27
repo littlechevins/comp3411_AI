@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# I need to create new array 80x80 that is filled with X's
+# instead of adding new parts, we just update and replace :)
+
 # 5 x 5
 
 # +-----+
@@ -104,6 +107,41 @@ class Map:
         self.map_print()
 
 
+    def getPatch(self, pos):
+        check = 0
+        patch = np.empty((0,5), int)
+        while (check < 5):
+            patch = np.append(patch, self.map[pos[0] + 2][pos[1] - 2 + check])
+            check = check + 1
+        return patch
+
+    # +-----+
+    # |CXXXCXXXXXXXXXXXXX
+    # |  k  |
+    # |     |
+    # |  ^  |
+    # |     |
+    # |*****|
+    # +-----+
+    # checks all the chars in the area marked between c's
+    def isExplored(self, pos, square):
+
+        # currLocLeft = self.map[pos[0] + 2][pos[1] - 2]
+        # currLocRight = self.map[pos[0] + 2][pos[1] + 2]
+
+        # currLocLeft = (pos[1] - 2)
+        # currLocRight = (pos[1] + 2)
+
+        # check = 0
+        # for check < 5:
+        #     if(self.map[pos[0] + 2][pos[1] - 2 + check] == 'X')
+        # print("checking if explored:" + self.map[pos[0] - 2][pos[1] - 2 + square] + ".")
+        if(self.map[pos[0] - 2][pos[1] - 2 + square] == 'X'):
+            return 0
+        return 1
+
+
+
     # # pass in the action and the returned view of the 5x5
     # we move the agent pointer to the given position from the centre
 
@@ -114,9 +152,7 @@ class Map:
 
     # @staticmethod
     def map_update(self, view, direction, pos):
-        cx = pos[0]
-        cy = pos[1]
-        # print(pos[0])
+
 
         if(direction == NORTH):
             print("NORTH")
@@ -128,7 +164,7 @@ class Map:
             self.map = np.vstack((myarray, self.map))
             # self.map_print(self.map)
         elif(direction == EAST):
-            print("")
+            print("EAST")
             # add to right of map, vertical
 
             # we need to pad our array since we must have matching shapes
@@ -144,7 +180,7 @@ class Map:
             print("east array shape: " + str(myarray.shape))
             self.map = np.hstack((myarray, self.map))
         elif(direction == SOUTH):
-            print("")
+            print("SOUTH")
             # add to bottom of map,  horizontal
         elif(direction == WEST):
             print("WEST")
@@ -164,6 +200,52 @@ class Map:
     #         row_map = row_map + 1
     #
     #     map_print(map)
+
+    def checkPatch(self, view, direction, pos):
+        cx = pos[0] - 2 #this is starting pos, we check until +5
+        cy = pos[1] - 2 # we look backwards in array
+        # print(pos[0])
+
+        # newPatch = np.zeros((0,5), int)
+        newPatch = ['X', 'X', 'X', 'X', 'X']
+        oldPatch = self.getPatch(pos)
+
+        # print("old patch: ")
+        # print(oldPatch)
+        # print(oldPatch.shape)
+        # print(newPatch.shape)
+        # square = 0 -> 4
+        # we only explore 5 squares at a time
+
+        # test = 0
+        # while test < 4:
+        #     print(test)
+        #     test = test + 1
+
+        # if we detected an empty square.
+        # we can replace this square with what we have found
+        square = 0
+        while square < 5:
+            # if we detect X's
+            if(self.isExplored(pos, square)):
+                # keep old
+                # print("adding:" + str(oldPatch[square]) + ".")
+                # newPatch = np.append(newPatch, oldPatch[square])
+                newPatch[square] = oldPatch[square]
+                # print("old")
+            else:
+                # add new
+                # newPatch = np.append(newPatch, view[0][square])
+                newPatch[square] = view[0][square]
+                # print("new")
+
+            square = square + 1
+
+            # update_patch()
+            print(newPatch)
+
+        # TEMPORY ONLY REMOVE LATER!!!!!!!!!!!!!!!!!!!!!!!
+        self.map = np.vstack((self.map, newPatch))
 
     def __init__(self):
         print("Generating map")
@@ -186,17 +268,28 @@ def main():
     downView = np.array([[' ', ' ', 'k', ' ', ' '], [' ', ' ', ' ', ' ', ' '], [' ', ' ', '^', ' ', ' '], ['*', '*', '*', '*', '*'], [' ', ' ', ' ', ' ', ' ']])
 
     leftView = np.array([[' ', ' ', ' ', ' ', ' '], [' ', 'k', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ']])
+
+    upsideDownPlusOne = np.array([['*', '*', '*', '*', '*'], [' ', ' ', ' ', ' ', ' '], [' ', ' ', '^', ' ', ' '], [' ', ' ', ' ', ' ', ' '], [' ', ' ', 'k', ' ', ' ']])
+
     # print(leftView.shape)
     # print(pos[0])
 
-    map.map_update(currView, currDir, pos)
-    map.map_print()
+    # map.map_print()
 
-    map.map_update(downView, 3, pos)
-    map.map_print()
+    # map.map_update(currView, currDir, pos)
+    # map.map_print()
+    #
+    # map.map_update(downView, 3, pos)
+    # map.map_print()
+    #
+    # map.map_update(leftView, 1, pos)
+    # map.map_print()
 
-    map.map_update(leftView, 1, pos)
-    map.map_print()
+    print("new patch")
+    map.checkPatch(upsideDownPlusOne, currDir, pos)
+    # map.map_print()
+
+
 
 if __name__ == "__main__":
     main()
