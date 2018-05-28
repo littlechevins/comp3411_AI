@@ -39,6 +39,10 @@ def get_action(view, lastAction):
     #     maps.map_init(maps.removeChararacter(view))
     #     isInit = 1
 
+
+    # important!!
+    # if next action is f and we have key/stone/axe in front of us, we must remove from list
+
     maps.mov_update(lastAction)
     print("UPDATING MOVE END")
 
@@ -54,6 +58,14 @@ def get_action(view, lastAction):
     maps.print_map()
     print("---------------------END--------------------")
 
+    print("Object in front:" + maps.get_object_front()[0] + ".")
+    print("key hashmap:" + str(maps.get_key_locations()))
+    print("tree hashmap:" + str(maps.get_tree_locations()))
+    print("door hashmap:" + str(maps.get_door_locations()))
+    print("axe hashmap:" + str(maps.get_axe_locations()))
+    print("stone hashmap:" + str(maps.get_stone_locations()))
+    print("treasure hashmap:" + str(maps.get_treasure_locations()))
+
     # input loop to take input from user (only returns if this is valid)
     while 1:
         inp = input("Enter Action(s): ")
@@ -63,7 +75,16 @@ def get_action(view, lastAction):
             if char in ['f','l','r','c','u','b','F','L','R','C','U','B']:
                 final_string += char
                 if final_string:
-                     return final_string[0]
+                    if(final_string == 'f'):
+                        if(maps.get_object_front()[0] == 'k'):
+                            maps.remove_special_object('k', maps.get_object_front()[1])
+                        elif(maps.get_object_front()[0] == 'o'):
+                            maps.remove_special_object('o', maps.get_object_front()[1])
+                        elif(maps.get_object_front()[0] == 'a'):
+                            maps.remove_special_object('a', maps.get_object_front()[1])
+                        elif(maps.get_object_front()[0] == '$'):
+                            maps.remove_special_object('$', maps.get_object_front()[1])
+                    return final_string[0]
 
 # helper function to print the grid
 def print_grid(view):

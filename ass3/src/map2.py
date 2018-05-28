@@ -63,8 +63,27 @@ class Map:
     MAX_SIZE = 80
     UNEXPLORED_BLOCK = '?'
 
+    TREE = 'T'
+    DOOR = '-'
+    WATER = '~'
+    WALL = '*'
+
+    AXE = 'a'
+    KEY = 'k'
+    STONE = 'o'
+    TREASURE = '$'
+
     locX = 0
     locY = 0
+
+    tree_locations = {}
+    # tree_locations2 = []
+    door_locations = {}
+    # water_locations = {}
+    axe_locations = {}
+    key_locations = {}
+    stone_locations = {}
+    treasure_locations = {}
 
 
 
@@ -175,11 +194,67 @@ class Map:
                     viewBlock = '<'
 
 
-            myX = self.locX + (j - 2);
-            myY = self.locY+ (2 - i);
+            myX = self.locX + (j - self.charOffset);
+            myY = self.locY+ (self.charOffset - i);
 
             findBlock = (myX, myY)
             self.map[findBlock] = viewBlock
+            # if current block is obstacle or tool, we add its location
+            self.add_special_object(viewBlock, findBlock)
+
+
+    # if current block is obstacle or tool, we add its location
+    def add_special_object(self, viewBlock, findBlock):
+            # tree_locations = {}
+            # door_locations = {}
+            # # water_locations = {}
+            # axe_locations = {}
+            # key_locations = {}
+            # stone_locations = {}
+            # treasure_locations = {}
+        # print("SPECIAL:" + viewBlock + ".")
+        if(viewBlock == self.TREE):
+            self.tree_locations[findBlock] = viewBlock
+            # if(self.object_exists(self.tree_locations2, findBlock) == 0):
+            #     self.tree_locations2.append(findBlock)
+            # print("tree found in vicinity")
+            # print(self.tree_locations)
+            # print(self.tree_locations2)
+        elif(viewBlock == self.DOOR):
+            self.door_locations[findBlock] = viewBlock
+            # self.door_locations.append(findBlock)
+            # print("door found in vicinity")
+            # print(self.door_locations)
+        elif(viewBlock == self.AXE):
+            self.axe_locations[findBlock] = viewBlock
+        elif(viewBlock == self.KEY):
+            self.key_locations[findBlock] = viewBlock
+        elif(viewBlock == self.STONE):
+            self.stone_locations[findBlock] = viewBlock
+        elif(viewBlock == self.TREASURE):
+            self.treasure_locations[findBlock] = viewBlock
+
+    def remove_special_object(self, viewBlock, findBlock):
+        if(viewBlock == self.TREE):
+            # self.tree_locations[findBlock] = viewBlock
+            del self.tree_locations[findBlock]
+        elif(viewBlock == self.DOOR):
+            del self.door_locations[findBlock]
+        elif(viewBlock == self.AXE):
+            del self.axe_locations[findBlock]
+        elif(viewBlock == self.KEY):
+            del self.key_locations[findBlock]
+        elif(viewBlock == self.STONE):
+            del self.stone_locations[findBlock]
+        elif(viewBlock == self.TREASURE):
+            del self.treasure_locations[findBlock]
+
+    # dont use until i figure out how to pass by reference in python
+    def object_exists(self, dataType, location):
+        for x in self.dataType:
+            if(x == location):
+                return 1
+        return 0
 
     def mov_update(self, action):
 
@@ -187,17 +262,18 @@ class Map:
 
         if(action == self.FOWARD):
             # what is current direction
-            print("foward action")
-            if(self.direction == NORTH):
-                self.locY = self.locY + 1
-            elif(self.direction == EAST):
-                self.locX = self.locX + 1
-            elif(self.direction == SOUTH):
-                self.locY = self.locY - 1
-            elif(self.direction == WEST):
-                self.locX = self.locX - 1
-            else:
-                print("Do not enter")
+            if(self.collission_detect() == 0):
+                if(self.direction == NORTH):
+                    self.locY = self.locY + 1
+                elif(self.direction == EAST):
+                    self.locX = self.locX + 1
+                elif(self.direction == SOUTH):
+                    self.locY = self.locY - 1
+                elif(self.direction == WEST):
+                    self.locX = self.locX - 1
+                else:
+                    raise ValueError("Direction not certain/unknown")
+
 
         elif(action == self.LEFT):
             print("left action")
@@ -209,12 +285,66 @@ class Map:
         #
         # else(action == UNLOCK):
 
+    def get_object_front(self):
+        if(self.direction == NORTH):
+            blockAheadX = self.locX
+            blockAheadY = self.locY + 1
+        elif(self.direction == EAST):
+            blockAheadX = self.locX + 1
+            blockAheadY = self.locY
+        elif(self.direction == SOUTH):
+            blockAheadX = self.locX
+            blockAheadY = self.locY - 1
+        elif(self.direction == WEST):
+            blockAheadX = self.locX - 1
+            blockAheadY = self.locY
+        else:
+            raise ValueError("Direction not certain/unknown")
+
+        return (self.map[(blockAheadX, blockAheadY)], (blockAheadX, blockAheadY))
+
     # since our direction is a number we just just mod it to change left n right
     def rotateDirection(self, dir):
         if(dir == self.LEFT):
             self.direction = (self.direction - 1) % 4
         if(dir == self.RIGHT):
             self.direction = (self.direction + 1) % 4
+
+    def collission_detect(self):
+        blockAheadX = self.locX
+        blockAheadY = self.locY
+
+        if(self.direction == NORTH):
+            blockAheadX = self.locX
+            blockAheadY = self.locY + 1
+        elif(self.direction == EAST):
+            blockAheadX = self.locX + 1
+            blockAheadY = self.locY
+        elif(self.direction == SOUTH):
+            blockAheadX = self.locX
+            blockAheadY = self.locY - 1
+        elif(self.direction == WEST):
+            blockAheadX = self.locX - 1
+            blockAheadY = self.locY
+        else:
+            raise ValueError("Direction not certain/unknown")
+
+        findBlock = (blockAheadX, blockAheadY)
+        blockAhead = self.map[findBlock]
+        # print("Block in front is:" + blockAhead + ".")
+
+        if(blockAhead == self.WALL):
+            print("Wall detected")
+            return 1
+        elif(blockAhead == self.TREE):
+            print("Tree detected")
+            return 1
+        elif(blockAhead == self.DOOR):
+            print("Door detected")
+            return 1
+
+        return 0
+
 
     def print_map(self):
 
@@ -248,6 +378,26 @@ class Map:
     #     #         newArray[i][j] = view[j][i];
     #     print(np.rot90(view))
     #     # print(view)
+
+    def get_key_locations(self):
+        return self.key_locations
+
+    def get_tree_locations(self):
+        return self.tree_locations
+
+    def get_door_locations(self):
+        return self.door_locations
+
+    def get_axe_locations(self):
+        return self.axe_locations
+
+    def get_stone_locations(self):
+        return self.stone_locations
+
+    def get_treasure_locations(self):
+        return self.treasure_locations
+
+
 
 
     def __init__(self):
