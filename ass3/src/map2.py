@@ -73,6 +73,10 @@ class Map:
     STONE = 'o'
     TREASURE = '$'
 
+    hasKey = True
+    hasAxe = False
+    numStones = 0
+
     locX = 0
     locY = 0
 
@@ -205,26 +209,12 @@ class Map:
 
     # if current block is obstacle or tool, we add its location
     def add_special_object(self, viewBlock, findBlock):
-            # tree_locations = {}
-            # door_locations = {}
-            # # water_locations = {}
-            # axe_locations = {}
-            # key_locations = {}
-            # stone_locations = {}
-            # treasure_locations = {}
+
         # print("SPECIAL:" + viewBlock + ".")
         if(viewBlock == self.TREE):
             self.tree_locations[findBlock] = viewBlock
-            # if(self.object_exists(self.tree_locations2, findBlock) == 0):
-            #     self.tree_locations2.append(findBlock)
-            # print("tree found in vicinity")
-            # print(self.tree_locations)
-            # print(self.tree_locations2)
         elif(viewBlock == self.DOOR):
             self.door_locations[findBlock] = viewBlock
-            # self.door_locations.append(findBlock)
-            # print("door found in vicinity")
-            # print(self.door_locations)
         elif(viewBlock == self.AXE):
             self.axe_locations[findBlock] = viewBlock
         elif(viewBlock == self.KEY):
@@ -234,9 +224,9 @@ class Map:
         elif(viewBlock == self.TREASURE):
             self.treasure_locations[findBlock] = viewBlock
 
+    # NOT SAFE OPERATION, do not delete block that doesnt exist
     def remove_special_object(self, viewBlock, findBlock):
         if(viewBlock == self.TREE):
-            # self.tree_locations[findBlock] = viewBlock
             del self.tree_locations[findBlock]
         elif(viewBlock == self.DOOR):
             del self.door_locations[findBlock]
@@ -351,19 +341,13 @@ class Map:
         print_size = 12
 
         line = ""
+        print("*" * (print_size+1) * 2)
         for y in range(print_size, -print_size, -1):
             for x in range(-print_size, print_size):
                 line = line + self.map[(x,y)]
             print('|' + line + '|')
             line = ""
-
-    #     for row in view:
-    #         for col in row:
-    #             map[row_map][col_map] = col
-    #             col_map = col_map + 1
-    #         row_map = row_map + 1
-    #
-    #     map_print(map)
+        print("*" * (print_size+1) * 2)
 
 
 
@@ -397,6 +381,11 @@ class Map:
     def get_treasure_locations(self):
         return self.treasure_locations
 
+    def get_tile(self, x, y):
+        return self.map[(x,y)]
+
+    def get_num_stones(self):
+        return self.numStones
 
 
 
@@ -417,66 +406,83 @@ class Map:
 
         direction = NORTH
 
+    def legal_move(self, tileInFront):
+        if(tileInFront == self.WALL):
+            return False
+        elif(tileInFront == self.KEY):
+            if(hasKey):
+                return True
+            else:
+                return False
+        elif(tileInFront == self.AXE and hasAxe):
+            if(hasAxe):
+                return True
+            else:
+                return False
+        else:
+            return True
+
+
 ##################################Shiwei added here#####################################
-  
-def isTilePassable(tile,hasKey,hasAxe):
-    return (  (tile == State.OBSTACLE_SPACE) or/   # all these state.XXXX is to be replaced by map setting
-              (tile == State.OBSTACLE_STEPPING_STONE_PLACED) or/
-              (tile == State.OBSTACLE_TEMPORARY_WATER) or/
-              (tile == State.TOOL_AXE) or/
-              (tile == State.TOOL_KEY) or/
-              (tile == State.TOOL_GOLD) or/
-              (tile == State.TOOL_STEPPING_STONE) or/
-              ((tile == State.OBSTACLE_DOOR) and hasKey) or/
-              ((tile == State.OBSTACLE_TREE) and hasAxe) or/
-              (tile == State.DIRECTION_UP) or/
-              (tile == State.DIRECTION_DOWN) or/
-              (tile == State.DIRECTION_LEFT) or/
-              (tile == State.DIRECTION_RIGHT)
-            )
+
+# def isTilePassable(tile,hasKey,hasAxe):
+#     return (  (tile == State.OBSTACLE_SPACE) or/   # all these state.XXXX is to be replaced by map setting
+#               (tile == State.OBSTACLE_STEPPING_STONE_PLACED) or/
+#               (tile == State.OBSTACLE_TEMPORARY_WATER) or/
+#               (tile == State.TOOL_AXE) or/
+#               (tile == State.TOOL_KEY) or/
+#               (tile == State.TOOL_GOLD) or/
+#               (tile == State.TOOL_STEPPING_STONE) or/
+#               ((tile == State.OBSTACLE_DOOR) and hasKey) or/
+#               ((tile == State.OBSTACLE_TREE) and hasAxe) or/
+#               (tile == State.DIRECTION_UP) or/
+#               (tile == State.DIRECTION_DOWN) or/
+#               (tile == State.DIRECTION_LEFT) or/
+#               (tile == State.DIRECTION_RIGHT)
+#             )
 
 
-def IsReachable(map,start,goal,hasKey,hasAxe):
-    q = queue.Queue()
-    isConnected=set()
-        
-    q.add(start)
-        
-    while(not q.empty()):
-        first = q.get()
-            
-        tile = getchar(map,first);
-        if(first not in isConnected):
-            if(not isTilePassable(tile,hasKey,hasAxe))
-                continue
-                
-            isConnected.add(first)
-                
-            for i in range(4):
-                neighbourX = first.getX();  #key of first is X,Y coordinate
-                neighbourY = first.getY();
-                
-                if i == 0:
-                    neighbourX += 1
-                    break
-                elif i == 1:
-                    neighbourX -= 1
-                    break
-                elif i == 2:
-                    neighbourY += 1
-                    break
-                elif i == 3:
-                    neighbourY -= 1
-                    break
-            neighbout = (str(neighbourX)+str(neighbourY))
-            if (neighbour not in isConnected):
-                q.add(neighbour)
-                
-        
-    return(goal in isConnected)
+# def IsReachable(map,start,goal,hasKey,hasAxe):
+#     q = queue.Queue()
+#     isConnected=set()
+#
+#     q.add(start)
+#
+#     while(not q.empty()):
+#         first = q.get()
+#
+#         tile = getchar(map,first);
+#         if(first not in isConnected):
+#             if(not isTilePassable(tile,hasKey,hasAxe))
+#                 continue
+#
+#             isConnected.add(first)
+#
+#             for i in range(4):
+#                 neighbourX = first.getX();  #key of first is X,Y coordinate
+#                 neighbourY = first.getY();
+#
+#                 if i == 0:
+#                     neighbourX += 1
+#                     break
+#                 elif i == 1:
+#                     neighbourX -= 1
+#                     break
+#                 elif i == 2:
+#                     neighbourY += 1
+#                     break
+#                 elif i == 3:
+#                     neighbourY -= 1
+#                     break
+#             neighbout = (str(neighbourX)+str(neighbourY))
+#             if (neighbour not in isConnected):
+#                 q.add(neighbour)
+#
+#
+#     return(goal in isConnected)
 ########################################################################################
-        
-        
+
+
 def main():
 
     # global locX

@@ -16,47 +16,18 @@ import map2
 # declaring visible grid to agent
 view = [['' for _ in range(5)] for _ in range(5)]
 maps = map2.Map()
-isInit = 0
 # pos = [0,0]
 
 # function to take get action from AI or user
 def get_action(view, lastAction):
 
     ## REPLACE THIS WITH AI CODE TO CHOOSE ACTION ##
-    global isInit
-    global pos
-
-    print("last action:" + lastAction + ":")
-
-
-
-    # # just assume we are always facing north
-    # if(lastAction == 'f'):
-    #     pos[0] = pos[0] + 1
-
-
-    # if(isInit == 0):
-    #     maps.map_init(maps.removeChararacter(view))
-    #     isInit = 1
-
-
-    # important!!
-    # if next action is f and we have key/stone/axe in front of us, we must remove from list
 
     maps.mov_update(lastAction)
-    print("UPDATING MOVE END")
-
-    print("UPDATING VIEW")
 
     maps.map_update(view)
-    print("UPDATING MOVE")
 
-
-    print("Last action:" + lastAction)
-
-    print("--------------------My Map--------------------")
     maps.print_map()
-    print("---------------------END--------------------")
 
     print("Object in front:" + maps.get_object_front()[0] + ".")
     print("key hashmap:" + str(maps.get_key_locations()))
@@ -75,6 +46,8 @@ def get_action(view, lastAction):
             if char in ['f','l','r','c','u','b','F','L','R','C','U','B']:
                 final_string += char
                 if final_string:
+                        # important!!
+                        # if next action is f and we have key/stone/axe in front of us, we must remove from list
                     if(final_string == 'f'):
                         if(maps.get_object_front()[0] == 'k'):
                             maps.remove_special_object('k', maps.get_object_front()[1])
@@ -84,6 +57,12 @@ def get_action(view, lastAction):
                             maps.remove_special_object('a', maps.get_object_front()[1])
                         elif(maps.get_object_front()[0] == '$'):
                             maps.remove_special_object('$', maps.get_object_front()[1])
+                    elif(final_string == 'c'):
+                        if(maps.get_object_front()[0] == 'T'):
+                            maps.remove_special_object('T', maps.get_object_front()[1])
+                    elif(final_string == 'u'):
+                        if(maps.get_object_front()[0] == '-'):
+                            maps.remove_special_object('-', maps.get_object_front()[1])
                     return final_string[0]
 
 # helper function to print the grid
