@@ -12,11 +12,50 @@ import sys
 import socket
 
 import map2
+import move
+import queue
+import random
 
 # declaring visible grid to agent
 view = [['' for _ in range(5)] for _ in range(5)]
 maps = map2.Map()
+moves = move.Move()
+coordMoves = moves.spiral((5,5), (0,0))
+pendingMoves = queue.Queue()
+actionsSoFar = []
 # pos = [0,0]
+
+
+def makeMoveSpiral():
+    print(actionsSoFar)
+    # print(coordMoves.pop(0))
+    while(maps.get_self_coord() == coordMoves[0]):
+        coordMoves.pop(0)
+    else:
+        sequence = maps.coord2Action(coordMoves.pop(0))
+    print("sequence")
+    print(sequence)
+    print("end seq")
+    if(pendingMoves.empty()):
+        for seq in sequence:
+            pendingMoves.put(seq)
+        print("coord moves")
+        print(coordMoves)
+        print("end")
+        tmp = pendingMoves.get()
+        actionsSoFar.append(tmp)
+        return tmp
+    else:
+        print("coord moves")
+        print(coordMoves)
+        print("end")
+        tmp = pendingMoves.get()
+        actionsSoFar.append(tmp)
+        return tmp
+
+def makeMoveRandom():
+    choices = ['f','l','r', 'c', 'u']
+    return (random.choice(choices))
 
 # function to take get action from AI or user
 def get_action(view, lastAction):
@@ -28,6 +67,10 @@ def get_action(view, lastAction):
     maps.map_update(view)
 
     maps.print_map()
+
+    return makeMoveRandom()
+    # return makeMoveSpiral()
+
 
     print("Object in front:" + maps.get_object_front()[0] + ".")
     print("key hashmap:" + str(maps.get_key_locations()))
@@ -76,6 +119,7 @@ if __name__ == "__main__":
 
     # pos[0] = 0
     # pos[1] = 0
+
 
     # checks for correct amount of arguments
     if len(sys.argv) != 3:

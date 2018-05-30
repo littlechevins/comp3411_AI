@@ -300,6 +300,14 @@ class Map:
         if(dir == self.RIGHT):
             self.direction = (self.direction + 1) % 4
 
+    def rotateDirectionNum(self, dir, num):
+        count = 0
+        for count in range(0, num):
+            if(dir == self.LEFT):
+                self.direction = (self.direction - 1) % 4
+            if(dir == self.RIGHT):
+                self.direction = (self.direction + 1) % 4
+
     def collission_detect(self):
         blockAheadX = self.locX
         blockAheadY = self.locY
@@ -363,6 +371,107 @@ class Map:
     #     print(np.rot90(view))
     #     # print(view)
 
+    def is_neighbour(self, coord):
+        if(locX + 1 == coord[0]):
+            return True
+        elif(locX - 1 == coord[0]):
+            return True
+        elif(locY + 1 == coord[1]):
+            return True
+        elif(locY - 1 == coord[1]):
+            return True
+        else:
+            return False
+
+    # code is long af and messy af but cbf to make pretty
+    def coord2Action(self, coord):
+        # if is_neighbour(coord):
+        # Testing if neighbour then changing direction on case by case
+        action = []
+        print("my coord: " + str(self.locX) + ", " + str(self.locY))
+        print("given coord: " + str(coord[0]) + ", " + str(coord[1]))
+
+        # neighbour to right
+        if(self.locX + 1 == coord[0]):
+            if(self.direction == NORTH):
+                # turn right, forward
+                action.append('r')
+                action.append('f')
+            elif(self.direction == EAST):
+                # forward
+                action.append('f')
+            elif(self.direction == SOUTH):
+                # turn left, forward
+                action.append('l')
+                action.append('f')
+            elif(self.direction == WEST):
+                # turn left twice, forward
+                action.append('l')
+                action.append('l')
+                action.append('f')
+        elif(self.locX - 1 == coord[0]):
+            if(self.direction == NORTH):
+                # turn left, forward
+                action.append('l')
+                action.append('f')
+            elif(self.direction == EAST):
+                # turn left twice, forward
+                action.append('l')
+                action.append('l')
+                action.append('f')
+            elif(self.direction == SOUTH):
+                # turn right, forward
+                action.append('r')
+                action.append('f')
+            elif(self.direction == WEST):
+                # forward
+                action.append('f')
+        elif(self.locY + 1 == coord[1]):
+            if(self.direction == NORTH):
+                # forward
+                action.append('f')
+            elif(self.direction == EAST):
+                # turn left , forward
+                action.append('l')
+                action.append('f')
+            elif(self.direction == SOUTH):
+                # turn left twice, forward
+                action.append('l')
+                action.append('l')
+                action.append('f')
+            elif(self.direction == WEST):
+                # turn right, forward
+                action.append('r')
+                action.append('f')
+        elif(self.locY - 1 == coord[1]):
+            if(self.direction == NORTH):
+                # turn left twice, forward
+                action.append('l')
+                action.append('l')
+                action.append('f')
+            elif(self.direction == EAST):
+                # turn right, forward
+                action.append('r')
+                action.append('f')
+            elif(self.direction == SOUTH):
+                # forward
+                action.append('f')
+            elif(self.direction == WEST):
+                # turn left, forward
+                action.append('l')
+                action.append('f')
+        elif(self.locY == 0 and self.locX == 0):
+                print("first loc 0,0")
+                action.append('l')
+                action.append('f')
+                # print(action)
+        else:
+            print("FOUND NONE???")
+            return []
+        return action
+
+
+
     def get_key_locations(self):
         return self.key_locations
 
@@ -383,6 +492,9 @@ class Map:
 
     def get_tile(self, x, y):
         return self.map[(x,y)]
+
+    def get_self_coord(self):
+        return (self.locX, self.locY)
 
     def get_num_stones(self):
         return self.numStones
