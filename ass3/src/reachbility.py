@@ -17,61 +17,75 @@ def movetotree(Map,TreeLocation):
     #append turn to tree + C(chop) to movelist
 
     return(coord2Action(movelist))
-  
-def isTilePassable(tile,hasKey,hasAxe,stone):  ###stone is the number of stone agent has
-    if (tile == '~' and stone>0):
-        return 'stone'
-    else:
-        return (  (tile == ' ') or/
-                  (tile == 'O') or/
-                  (tile == 'a') or/
-                  (tile == 'k') or/
-                  (tile == '$') or/
-                  (tile == 'o') or/
-                  ((tile == '-') and hasKey) or/
-                  ((tile == 'T') and hasAxe) or
-                )
+    def isTilePassable(self,tile,hasKey,hasAxe,stone):  ###stone is the number of stone agent has
+        if (tile == '~' and stone>0):
+            return 'stone'
+        else:
+            return (  (tile == ' ') or\
+                      (tile == 'O') or\
+                      (tile == 'a') or\
+                      (tile == 'k') or\
+                      (tile == '$') or\
+                      (tile == 'o') or\
+                      ((tile == '-') and hasKey) or\
+                      ((tile == 'T') and hasAxe) or\
+                      (tile == '^')or\
+                      (tile == 'v') or\
+                      (tile == '<') or\
+                      (tile == '>'))
 
 
-def IsReachable(Map,start,goal,hasKey,hasAxe,stone):
-    
-    q = queue.Queue()
-    isConnected=set()
-        
-    q.add(start)
-        
-    while(not q.empty()):
-        first = q.get()
+    def IsReachable(self,Map,start,goal,hasKey,hasAxe):
+        stone = Map.numStones
+        q = queue.Queue()
+        isConnected=set()
             
-        tile = Map.map[first]
-        if(first not in isConnected):
-            checkstone = isTilePassable(tile,hasKey,hasAxe,stone)
-            if(not checkstone):
-                continue
-            elif (checkstone == 'stone'):
-                stone = stone - 1
+        q.put(start)
+            
+        while(not q.empty()):
+            print([i for i in q.queue])
+            print(isConnected)
+            first = q.get()
                 
-            isConnected.add(first)
-                
-            for i in range(4):
-                neighbourX = first[0];  #key of first is X,Y coordinate
-                neighbourY = first[1];
-                
-                if i == 0:
-                    neighbourX += 1
-                    break
-                elif i == 1:
-                    neighbourX -= 1
-                    break
-                elif i == 2:
-                    neighbourY += 1
-                    break
-                elif i == 3:
-                    neighbourY -= 1
-                    break
-            neighbour = (str(neighbourX)+str(neighbourY))
-            if (neighbour not in isConnected):
-                q.add(neighbour)
-                
-        
-    return(goal in isConnected)
+            tile = Map.map[first]
+            
+            if(first not in isConnected):
+                checkstone = self.isTilePassable(tile,hasKey,hasAxe,stone)
+                if(not checkstone):
+                    continue
+                elif (checkstone == 'stone'):
+                    stone = stone - 1
+                    
+                isConnected.add(first)
+                    
+                for i in range(4):
+                    neighbourX = first[0];  #key of first is X,Y coordinate
+                    neighbourY = first[1];
+                    
+                    if i == 0:
+                        neighbourX += 1
+                        neighbour = (neighbourX,neighbourY)
+                        if (neighbour not in isConnected):
+                            q.put(neighbour)                        
+                        continue
+                    elif i == 1:
+                        neighbourX -= 1
+                        neighbour = (neighbourX,neighbourY)
+                        if (neighbour not in isConnected):
+                            q.put(neighbour)
+                        continue
+                    elif i == 2:
+                        neighbourY += 1
+                        neighbour = (neighbourX,neighbourY)
+                        if (neighbour not in isConnected):
+                            q.put(neighbour)
+                        continue
+                    elif i == 3:
+                        neighbourY -= 1
+                        
+                        neighbour = (neighbourX,neighbourY)
+                        if (neighbour not in isConnected):
+                            q.put(neighbour)
+                    
+            
+        return(goal in isConnected)
