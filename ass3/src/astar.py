@@ -35,7 +35,7 @@ class Astar:
         # The set of currently discovered nodes that are not evaluated yet.
         # Initially, only the start node is known.
         openSet = queue.PriorityQueue()
-        openSet.put(start, 0)
+        # openSet.put(start, 0)
 
         # For each node, which node it can most efficiently be reached from.
         # If a node can be reached from many nodes, cameFrom will eventually contain the
@@ -51,64 +51,71 @@ class Astar:
             self.gScore[(x,y)] = self.INFINITY
             self.fScore[(x,y)] = self.INFINITY
 
-        print("set g and f scores to infinite")
+        # print("set g and f scores to infinite")
 
         # The cost of going from start to start is zero.
         self.gScore[start] = 0;
 
-        print("establishing gscore start")
+        # print("establishing gscore start")
 
         # For the first node, that value is completely heuristic.
         self.fScore[start] = self.heuristic_cost_estimate(start, goal)
+        openSet.put(start)
 
-        print("fscore at start is heuristic to goal")
+        # print("fscore at start is heuristic to goal")
 
         while not openSet.empty():
 
-            print("contents of openset")
+            # print("contents of openset")
             # print(openSet)
             # the node in openSet having the lowest fScore[] value
             current = openSet.get()
-            print("current:" + str(current))
-            print("goal:" + str(goal))
+            # print("current:" + str(current))
+            # print("goal:" + str(goal))
             if current == goal:
-                print("current is goal")
-                return True
+                print("current is goal!!!!!!!!!!!!!")
+                searchExhausted = True
+                return
                 # return reconstruct_path(cameFrom, current)
 
 
-            closedSet[current] = None
+            closedSet[current] = self.map.get_tile(current[0], current[1])
 
             # for each neighbor of current
+            print("current:" + str(current))
+            print("neighbours:" + str(self.get_neighbours(current)))
             for neighbour in self.get_neighbours(current):
-                print("current is:" + str(current))
-                print("neighbour is:" + str(neighbour))
+                # print("current is:" + str(current))
+                # print("neighbour is:" + str(neighbour))
                 if neighbour in closedSet:
                 # Ignore the neighbor which is already evaluated.
                     continue
 
-                if neighbour not in openSet.queue:	# Discover a new node
-                    openSet.put(neighbour)
+                if neighbour in openSet.queue:	# Discover a new node
+                    continue
+                    # openSet.put(neighbour)
 
                 # // The distance from start to a neighbor
                 # //the "dist_between" function may vary as per the solution requirements.
                 tentative_gScore = self.gScore[current] + 1
                 if tentative_gScore >= self.gScore[neighbour]:
                     continue # This is not a better path.
+                print("tentative score:" + str(tentative_gScore))
 
                 # // This path is the best until now. Record it!
                 cameFrom[neighbour] = current
                 self.gScore[neighbour] = tentative_gScore
-                self.fScore[neighbour] = self.gScore[neighbour] + self.heuristic_cost_estimate(neighbour, goal)
+                self.fScore[neighbour] = tentative_gScore + self.heuristic_cost_estimate(neighbour, goal)
 
-        if (neighbour not in openSet)
-            openSet.put(neighbour)
+            if (neighbour not in openSet.queue):
+                openSet.put(neighbour)
 
         # return failure
         searchExhausted = True
 
     def heuristic_cost_estimate(self, start, goal):
         # we use manhattan distance since it is admissible due to not horizontal movement
+        print("heuristic is:" + str(abs(start[0] - goal[0]) + abs(start[1] - goal[1])))
         return abs(start[0] - goal[0]) + abs(start[1] - goal[1])
 
     def get_neighbours(self, block):

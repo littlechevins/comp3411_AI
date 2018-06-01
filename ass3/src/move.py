@@ -3,7 +3,7 @@
 import queue
 import random
 import map2
-import astar
+import astar3
 # maps = map2.Map()
 pendingMoves = queue.Queue()
 actionsSoFar = []
@@ -33,7 +33,10 @@ class Move:
         # final_string = self.makeMoveUnexplored()
         final_string = self.makeMoveRandom()
         print("running atar")
-        self.ast.search((0,0), (1,1))
+        start = (0,0)
+        goal = (7,7)
+        cameFrom, costSoFar = self.ast.search(start, goal)
+        print(cameFrom)
         print("stopping astar")
 
         # if(final_string == 'f'):
@@ -170,7 +173,7 @@ class Move:
     def __init__(self, globalMap):
         print("Move init")
         self.maps = globalMap
-        self.ast = astar.Astar(self.maps)
+        self.ast = astar3.Astar(self.maps)
 
 
 # def main():

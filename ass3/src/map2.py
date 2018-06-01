@@ -521,6 +521,16 @@ class Map:
         neighbours.append((block[0], block[1]-1))
         return neighbours
 
+    def get_neighboursGiven(self, block):
+        neighbours = []
+
+        # for i in range(0, 3):
+        neighbours.append((block[0]+1, block[1]))
+        neighbours.append((block[0]-1, block[1]))
+        neighbours.append((block[0], block[1]+1))
+        neighbours.append((block[0], block[1]-1))
+        return neighbours
+
     # randomly explore
     # if found key then astar to door
     # if found axe then astar to tree
