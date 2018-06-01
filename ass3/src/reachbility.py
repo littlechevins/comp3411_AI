@@ -1,17 +1,17 @@
 
   
 def isTilePassable(tile,hasKey,hasAxe,stone):  ###stone is the number of stone agent has
-    if (tile == '~' && stone>0):
+    if (tile == '~' and stone>0):
         return 'stone'
     else:
-        return (  (tile == ' ') ||/
-                  (tile == 'O') ||/
-                  (tile == 'a') ||/
-                  (tile == 'k') ||/
-                  (tile == '$') ||/
-                  (tile == 'o') ||/
-                  ((tile == '-') && hasKey) ||/
-                  ((tile == 'T') && hasAxe) ||
+        return (  (tile == ' ') or/
+                  (tile == 'O') or/
+                  (tile == 'a') or/
+                  (tile == 'k') or/
+                  (tile == '$') or/
+                  (tile == 'o') or/
+                  ((tile == '-') && hasKey) or/
+                  ((tile == 'T') && hasAxe) or
                 )
 
 
@@ -22,13 +22,13 @@ def IsReachable(Map,start,goal,hasKey,hasAxe,stone):
         
     q.add(start)
         
-    while(!q.empty()):
+    while(not q.empty()):
         first = q.get()
             
         tile = Map.map[first]
         if(first not in isConnected):
             checkstone = isTilePassable(tile,hasKey,hasAxe,stone)
-            if(!checkstone):
+            if(not checkstone):
                 continue
             elif (checkstone == 'stone'):
                 stone = stone - 1
