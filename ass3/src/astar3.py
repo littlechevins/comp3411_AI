@@ -4,7 +4,7 @@ class Astar:
 
     # https://rosettacode.org/wiki/A*_search_algorithm#Python
 
-    def search(self, start, end):
+    def search(self, start, end, hasKey, hasAxe):
         G = {}
         F = {}
 
@@ -43,6 +43,10 @@ class Astar:
             for neighbour in self.map.get_neighboursGiven(current):
                 if neighbour in closedVertices:
                     continue #We have already processed this node exhaustively
+
+                if (not self.map.isTilePassable(neighbour, hasKey, hasAxe, 0)):
+                  continue
+
                 candidateG = G[current] + 1 # graph.move_cost(current, neighbour)
 
                 if neighbour not in openVertices:

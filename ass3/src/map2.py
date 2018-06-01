@@ -498,6 +498,12 @@ class Map:
     def get_treasure_locations(self):
         return self.treasure_locations
 
+    def get_has_key(self):
+        return self.hasKey
+
+    def get_has_axe(self):
+        return self.hasAxe
+
     def get_tile(self, x, y):
         return self.map[(x,y)]
 
@@ -535,6 +541,40 @@ class Map:
     # if found key then astar to door
     # if found axe then astar to tree
     #
+    def legal_move(self, tileInFront):
+        if(tileInFront == self.WALL):
+            return False
+        elif(tileInFront == self.KEY):
+            if(hasKey):
+                return True
+            else:
+                return False
+        elif(tileInFront == self.AXE and hasAxe):
+            if(hasAxe):
+                return True
+            else:
+                return False
+        else:
+            return True
+
+    def isTilePassable(self,tile,hasKey,hasAxe,stone):  ###stone is the number of stone agent has
+        if (tile == '~' and stone>0):
+            return 'stone'
+        else:
+            return (  (tile == ' ') or\
+                      (tile == 'O') or\
+                      (tile == 'a') or\
+                      (tile == 'k') or\
+                      (tile == '$') or\
+                      (tile == 'o') or\
+                      ((tile == '-') and hasKey) or\
+                      ((tile == 'T') and hasAxe) or\
+                      (tile == '^')or\
+                      (tile == 'v') or\
+                      (tile == '<') or\
+                      (tile == '>'))
+
+
 
 
     def __init__(self):
@@ -554,21 +594,7 @@ class Map:
 
         direction = NORTH
 
-    def legal_move(self, tileInFront):
-        if(tileInFront == self.WALL):
-            return False
-        elif(tileInFront == self.KEY):
-            if(hasKey):
-                return True
-            else:
-                return False
-        elif(tileInFront == self.AXE and hasAxe):
-            if(hasAxe):
-                return True
-            else:
-                return False
-        else:
-            return True
+
 
 
 ##################################Shiwei added here#####################################

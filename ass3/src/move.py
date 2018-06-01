@@ -31,30 +31,46 @@ class Move:
         print("treasure hashmap:" + str(self.maps.get_treasure_locations()))
 
         # final_string = self.makeMoveUnexplored()
-        final_string = self.makeMoveRandom()
-        print("running atar")
-        start = (0,0)
-        goal = (7,7)
-        cameFrom, costSoFar = self.ast.search(start, goal)
-        print(cameFrom)
-        print("stopping astar")
 
-        # if(final_string == 'f'):
-        #     if(maps.get_object_front()[0] == 'k'):
-        #         maps.remove_special_object('k', maps.get_object_front()[1])
-        #     elif(maps.get_object_front()[0] == 'o'):
-        #         maps.remove_special_object('o', maps.get_object_front()[1])
-        #     elif(maps.get_object_front()[0] == 'a'):
-        #         maps.remove_special_object('a', maps.get_object_front()[1])
-        #     elif(maps.get_object_front()[0] == '$'):
-        #         maps.remove_special_object('$', maps.get_object_front()[1])
-        # elif(final_string == 'c'):
-        #     if(maps.get_object_front()[0] == 'T'):
-        #         maps.remove_special_object('T', maps.get_object_front()[1])
-        # elif(final_string == 'u'):
-        #     if(maps.get_object_front()[0] == '-'):
-        #         maps.remove_special_object('-', maps.get_object_front()[1])
-        # return final_string[0]
+        # do random moves for 30 turns
+        # if found key and astar can find a path then take it and open
+        # if found axe and astar can find path then take it
+            # if we have also found tree then astar to tree and cut
+
+
+        # print("running atar")
+        # start = (0,0)
+        # goal = (7,7)
+        # cameFrom, costSoFar = self.ast.search(start, goal)
+        # print(cameFrom)
+        # print("stopping astar")
+
+        if(self.numMoves < 300):
+            print("random move:" + str(self.numMoves))
+            final_string = self.makeMoveRandom()
+        else:
+            final_string = self.makeMoveSeekNGo()
+
+
+
+
+        if(final_string == 'f'):
+            if(self.maps.get_object_front()[0] == 'k'):
+                self.maps.remove_special_object('k', self.maps.get_object_front()[1])
+            elif(self.maps.get_object_front()[0] == 'o'):
+                self.maps.remove_special_object('o', self.maps.get_object_front()[1])
+            elif(self.maps.get_object_front()[0] == 'a'):
+                self.maps.remove_special_object('a', self.maps.get_object_front()[1])
+            elif(self.maps.get_object_front()[0] == '$'):
+                self.maps.remove_special_object('$', self.maps.get_object_front()[1])
+        elif(final_string == 'c'):
+            if(self.maps.get_object_front()[0] == 'T'):
+                self.maps.remove_special_object('T', self.maps.get_object_front()[1])
+        elif(final_string == 'u'):
+            if(self.maps.get_object_front()[0] == '-'):
+                self.maps.remove_special_object('-', self.maps.get_object_front()[1])
+        self.numMoves = self.numMoves + 1
+        return final_string[0]
 
         # not used vvv
         # input loop to take input from user (only returns if this is valid)
@@ -84,6 +100,51 @@ class Move:
                             if(self.maps.get_object_front()[0] == '-'):
                                 self.maps.remove_special_object('-', self.maps.get_object_front()[1])
                         return final_string[0]
+
+    def makeMoveSeekNGo(self):
+
+        if(self.maps.get_has_key):
+            if not self.maps.get_door_locations() == None:
+                # print(self.maps.get_door_locations())
+                # print(next(iter(self.maps.get_door_locations())))
+                door_loc = next(iter(self.maps.get_door_locations()))
+                coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), door_loc, self.maps.get_has_key(), self.maps.get_has_axe())
+                coordMoves.append('u')
+            else:
+                print("empty key")
+
+        elif(self.maps.get_has_axe):
+            if not self.maps.get_tree_locations() == None:
+                tree_loc = next(iter(self.maps.get_tree_locations()))
+                coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), tree_loc, self.maps.get_has_key(), self.maps.get_has_axe())
+                coordMoves.append('c')
+            else:
+                print("empty axe")
+
+
+        while(self.maps.get_self_coord() == coordMoves[0]):
+            coordMoves.pop(0)
+        else:
+            sequence = self.maps.coord2Action(coordMoves.pop(0))
+        print("sequence")
+        print(sequence)
+        print("end seq")
+        if(pendingMoves.empty()):
+            for seq in sequence:
+                pendingMoves.put(seq)
+            print("coord moves")
+            print(coordMoves)
+            print("end")
+            tmp = pendingMoves.get()
+            actionsSoFar.append(tmp)
+            return tmp
+        else:
+            print("coord moves")
+            print(coordMoves)
+            print("end")
+            tmp = pendingMoves.get()
+            actionsSoFar.append(tmp)
+            return tmp
 
     # def test():
     #     print("test")
@@ -169,7 +230,7 @@ class Move:
                 dx, dy = -dy, dx
             x, y = x+dx, y+dy
         return list
-    
+
     ###############
     def isTilePassable(self,tile,hasKey,hasAxe,stone):  ###stone is the number of stone agent has
         if (tile == '~' and stone>0):
@@ -193,34 +254,34 @@ class Move:
         stone = Map.numStones
         q = queue.Queue()
         isConnected=set()
-            
+
         q.put(start)
-            
+
         while(not q.empty()):
             print([i for i in q.queue])
             print(isConnected)
             first = q.get()
-                
+
             tile = Map.map[first]
-            
+
             if(first not in isConnected):
                 checkstone = self.isTilePassable(tile,hasKey,hasAxe,stone)
                 if(not checkstone):
                     continue
                 elif (checkstone == 'stone'):
                     stone = stone - 1
-                    
+
                 isConnected.add(first)
-                    
+
                 for i in range(4):
                     neighbourX = first[0];  #key of first is X,Y coordinate
                     neighbourY = first[1];
-                    
+
                     if i == 0:
                         neighbourX += 1
                         neighbour = (neighbourX,neighbourY)
                         if (neighbour not in isConnected):
-                            q.put(neighbour)                        
+                            q.put(neighbour)
                         continue
                     elif i == 1:
                         neighbourX -= 1
@@ -236,21 +297,22 @@ class Move:
                         continue
                     elif i == 3:
                         neighbourY -= 1
-                        
+
                         neighbour = (neighbourX,neighbourY)
                         if (neighbour not in isConnected):
                             q.put(neighbour)
-                    
-            
+
+
         return(goal in isConnected)
-    
-    
+
+
     ###############
 
     def __init__(self, globalMap):
         print("Move init")
         self.maps = globalMap
         self.ast = astar3.Astar(self.maps)
+        self.numMoves = 0
 
 
 # def main():
