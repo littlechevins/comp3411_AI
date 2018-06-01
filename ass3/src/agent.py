@@ -13,100 +13,31 @@ import socket
 
 import map2
 import move
-import queue
-import random
+
 
 # declaring visible grid to agent
 view = [['' for _ in range(5)] for _ in range(5)]
 maps = map2.Map()
-moves = move.Move()
-coordMoves = moves.spiral((5,5), (0,0))
-pendingMoves = queue.Queue()
-actionsSoFar = []
+moves = move.Move(maps)
 # pos = [0,0]
 
-
-def makeMoveSpiral():
-    print(actionsSoFar)
-    # print(coordMoves.pop(0))
-    while(maps.get_self_coord() == coordMoves[0]):
-        coordMoves.pop(0)
-    else:
-        sequence = maps.coord2Action(coordMoves.pop(0))
-    print("sequence")
-    print(sequence)
-    print("end seq")
-    if(pendingMoves.empty()):
-        for seq in sequence:
-            pendingMoves.put(seq)
-        print("coord moves")
-        print(coordMoves)
-        print("end")
-        tmp = pendingMoves.get()
-        actionsSoFar.append(tmp)
-        return tmp
-    else:
-        print("coord moves")
-        print(coordMoves)
-        print("end")
-        tmp = pendingMoves.get()
-        actionsSoFar.append(tmp)
-        return tmp
-
-def makeMoveRandom():
-    choices = ['f','l','r', 'c', 'u']
-    return (random.choice(choices))
 
 # function to take get action from AI or user
 def get_action(view, lastAction):
 
     ## REPLACE THIS WITH AI CODE TO CHOOSE ACTION ##
-
+    print("before loc:" + str(maps.get_self_coord()))
+    print("updating move:" + str(lastAction))
     maps.mov_update(lastAction)
+    print("current loc:" + str(maps.get_self_coord()))
 
     maps.map_update(view)
 
     maps.print_map()
 
-    return makeMoveRandom()
-    # return makeMoveSpiral()
+    return moves.moveChar()
 
 
-    print("Object in front:" + maps.get_object_front()[0] + ".")
-    print("key hashmap:" + str(maps.get_key_locations()))
-    print("tree hashmap:" + str(maps.get_tree_locations()))
-    print("door hashmap:" + str(maps.get_door_locations()))
-    print("axe hashmap:" + str(maps.get_axe_locations()))
-    print("stone hashmap:" + str(maps.get_stone_locations()))
-    print("treasure hashmap:" + str(maps.get_treasure_locations()))
-
-    # input loop to take input from user (only returns if this is valid)
-    while 1:
-        inp = input("Enter Action(s): ")
-        inp.strip()
-        final_string = ''
-        for char in inp:
-            if char in ['f','l','r','c','u','b','F','L','R','C','U','B']:
-                final_string += char
-                if final_string:
-                        # important!!
-                        # if next action is f and we have key/stone/axe in front of us, we must remove from list
-                    if(final_string == 'f'):
-                        if(maps.get_object_front()[0] == 'k'):
-                            maps.remove_special_object('k', maps.get_object_front()[1])
-                        elif(maps.get_object_front()[0] == 'o'):
-                            maps.remove_special_object('o', maps.get_object_front()[1])
-                        elif(maps.get_object_front()[0] == 'a'):
-                            maps.remove_special_object('a', maps.get_object_front()[1])
-                        elif(maps.get_object_front()[0] == '$'):
-                            maps.remove_special_object('$', maps.get_object_front()[1])
-                    elif(final_string == 'c'):
-                        if(maps.get_object_front()[0] == 'T'):
-                            maps.remove_special_object('T', maps.get_object_front()[1])
-                    elif(final_string == 'u'):
-                        if(maps.get_object_front()[0] == '-'):
-                            maps.remove_special_object('-', maps.get_object_front()[1])
-                    return final_string[0]
 
 # helper function to print the grid
 def print_grid(view):

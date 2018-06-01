@@ -89,6 +89,8 @@ class Map:
     stone_locations = {}
     treasure_locations = {}
 
+    explored_locations = {}
+
 
 
     def map_print(self):
@@ -255,12 +257,16 @@ class Map:
             if(self.collission_detect() == 0):
                 if(self.direction == NORTH):
                     self.locY = self.locY + 1
+                    self.explored_locations[(self.locX, self.locY)] = self.map[(self.locX, self.locY)]
                 elif(self.direction == EAST):
                     self.locX = self.locX + 1
+                    self.explored_locations[(self.locX, self.locY)] = self.map[(self.locX, self.locY)]
                 elif(self.direction == SOUTH):
                     self.locY = self.locY - 1
+                    self.explored_locations[(self.locX, self.locY)] = self.map[(self.locX, self.locY)]
                 elif(self.direction == WEST):
                     self.locX = self.locX - 1
+                    self.explored_locations[(self.locX, self.locY)] = self.map[(self.locX, self.locY)]
                 else:
                     raise ValueError("Direction not certain/unknown")
 
@@ -371,6 +377,8 @@ class Map:
     #     print(np.rot90(view))
     #     # print(view)
 
+
+
     def is_neighbour(self, coord):
         if(locX + 1 == coord[0]):
             return True
@@ -388,8 +396,8 @@ class Map:
         # if is_neighbour(coord):
         # Testing if neighbour then changing direction on case by case
         action = []
-        print("my coord: " + str(self.locX) + ", " + str(self.locY))
-        print("given coord: " + str(coord[0]) + ", " + str(coord[1]))
+        # print("my coord: " + str(self.locX) + ", " + str(self.locY))
+        # print("given coord: " + str(coord[0]) + ", " + str(coord[1]))
 
         # neighbour to right
         if(self.locX + 1 == coord[0]):
@@ -499,6 +507,24 @@ class Map:
     def get_num_stones(self):
         return self.numStones
 
+    def get_explored_locations(self):
+        return self.explored_locations
+
+    def get_neighbours(self):
+        block = [self.locX, self.locY]
+        neighbours = []
+
+        # for i in range(0, 3):
+        neighbours.append((block[0]+1, block[1]))
+        neighbours.append((block[0]-1, block[1]))
+        neighbours.append((block[0], block[1]+1))
+        neighbours.append((block[0], block[1]-1))
+        return neighbours
+
+    # randomly explore
+    # if found key then astar to door
+    # if found axe then astar to tree
+    #
 
 
     def __init__(self):
