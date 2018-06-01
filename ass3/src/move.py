@@ -186,7 +186,7 @@ class Move:
                       (tile == '>'))
 
 
-    def IsReachable(self,Map,start,goal,hasKey,hasAxe):
+    def IsReachable(self,Map,start,goal,hasKey,hasAxe):  # work when there is no raft
         stone = Map.numStones
         q = queue.Queue()
         isConnected=set()
