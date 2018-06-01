@@ -10,8 +10,8 @@ def isTilePassable(tile,hasKey,hasAxe,stone):  ###stone is the number of stone a
                   (tile == 'k') or/
                   (tile == '$') or/
                   (tile == 'o') or/
-                  ((tile == '-') && hasKey) or/
-                  ((tile == 'T') && hasAxe) or
+                  ((tile == '-') and hasKey) or/
+                  ((tile == 'T') and hasAxe) or
                 )
 
 
