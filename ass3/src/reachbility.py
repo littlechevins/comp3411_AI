@@ -75,7 +75,3 @@ def IsReachable(Map,start,goal,hasKey,hasAxe,stone):
                 
         
     return(goal in isConnected)
-
-
-     return(goal in isConnected)
-########################################################################################
