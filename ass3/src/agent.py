@@ -26,10 +26,10 @@ moves = move.Move(maps)
 def get_action(view, lastAction):
 
     ## REPLACE THIS WITH AI CODE TO CHOOSE ACTION ##
-    print("before loc:" + str(maps.get_self_coord()))
-    print("updating move:" + str(lastAction))
+    # print("before loc:" + str(maps.get_self_coord()))
+    # print("updating move:" + str(lastAction))
     maps.mov_update(lastAction)
-    print("current loc:" + str(maps.get_self_coord()))
+    # print("current loc:" + str(maps.get_self_coord()))
 
     maps.map_update(view)
 

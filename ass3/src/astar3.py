@@ -44,10 +44,9 @@ class Astar:
                 if neighbour in closedVertices:
                     continue #We have already processed this node exhaustively
 
-                print("testing passable:" + str(map.get_tile(neighbour)))
-                if (not self.map.isTilePassable(neighbour, hasKey, hasAxe, 0)):
-                    print("not passable")
-                  continue
+
+                if not self.map.isTilePassable(self.map.get_tile(neighbour[0], neighbour[1]), hasKey, hasAxe, 0):
+                    continue
 
                 candidateG = G[current] + 1 # graph.move_cost(current, neighbour)
 
@@ -62,7 +61,9 @@ class Astar:
                 H = self.heuristic(neighbour, end)
                 F[neighbour] = G[neighbour] + H
 
-        raise RuntimeError("A* failed to find a solution")
+        # raise RuntimeError("A* failed to find a solution")
+        print("FAIL TO FIND ASTAR SOLUTION")
+        return [], 0
 
         # closedSet = set()
         #

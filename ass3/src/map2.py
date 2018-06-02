@@ -73,7 +73,7 @@ class Map:
     STONE = 'o'
     TREASURE = '$'
 
-    hasKey = True
+    hasKey = False
     hasAxe = False
     numStones = 0
 
@@ -281,6 +281,7 @@ class Map:
         #
         # else(action == UNLOCK):
 
+    # returns tuple of (object, coord)
     def get_object_front(self):
         if(self.direction == NORTH):
             blockAheadX = self.locX
@@ -503,6 +504,12 @@ class Map:
 
     def get_has_axe(self):
         return self.hasAxe
+
+    def set_has_key(self, set):
+        self.hasKey = set
+
+    def set_has_axe(self, set):
+        self.hasAxe = set
 
     def get_tile(self, x, y):
         return self.map[(x,y)]
