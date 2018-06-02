@@ -2,8 +2,8 @@
 
 import queue
 import random
-import map2
-import astar3
+import map
+import astar
 # maps = map2.Map()
 pendingMoves = queue.Queue()
 actionsSoFar = []
@@ -11,16 +11,10 @@ actionsSoFar = []
 
 class Move:
 
-
-    # coordMoves = moves.spiral((5,5), (0,0))
-
-
+    #
+    # Returns a action for the agent to take. Action is dependant on what parts of map objects are known. We start with randomised actions.
+    #
     def moveChar(self):
-
-        # print(self.maps.get_explored_locations())
-        # print("next unexploreed move:" + str(makeMoveUnexplored()))
-        # return makeMoveRandom()
-        # return makeMoveSpiral()
 
         # print("Object in front:" + self.maps.get_object_front()[0] + ".")
         # print("key hashmap:" + str(self.maps.get_key_locations()))
@@ -32,38 +26,15 @@ class Move:
         # print("has key:" + str(self.maps.get_has_key()))
         # print("has axe:" + str(self.maps.get_has_axe()))
 
-
-        # final_string = self.makeMoveUnexplored()
-
-        # do random moves for 30 turns
-        # if found key and astar can find a path then take it and open
-        # if found axe and astar can find path then take it
-            # if we have also found tree then astar to tree and cut
-
-
-        # print("running atar")
-        # start = (0,0)
-        # goal = (7,7)
-        # cameFrom, costSoFar = self.ast.search(start, goal)
-        # print(cameFrom)
-        # print("stopping astar")
-
-        # print("testing is passable")
-        # tile = '*'
-        # test = self.maps.isTilePassable(tile,False,False,0)
-        # print(test)
-        # print("fin test passable")
-
-
         # full explore map without doing anything undoable
         if(self.numMoves < 1000):
-            print("random move:" + str(self.numMoves))
+            # print("random move:" + str(self.numMoves))
             final_string = self.makeMoveRandom()
+            if(self.maps.get_object_front()[0] == '~'):
+                final_string = 'l'
+
         else:
             final_string = self.makeMoveSeekNGo()
-
-        # print("final string is:" + str(final_string))
-
 
 
         if(final_string == 'f'):
@@ -93,7 +64,7 @@ class Move:
         self.numMoves = self.numMoves + 1
         return final_string[0]
 
-        # not used vvv
+        # not used below. Should return before
         # input loop to take input from user (only returns if this is valid)
         while 1:
             inp = input("Enter Action(s): ")
@@ -124,48 +95,38 @@ class Move:
                                 pendingMoves.put('f')
                         return final_string[0]
 
+    #
+    # Pushes into pending moves a path from current position to a special object. We then get the first item from pending moves and return.
+    #
     def makeMoveSeekNGo(self):
 
         cutTrigger = False
         unlockTrigger = False
-        # coordMoves = []
 
         if(self.maps.get_has_key()):
             if self.maps.get_door_locations():
-                # print(self.maps.get_door_locations())
                 door_loc = next(iter(self.maps.get_door_locations()))
-                # print("astar to door")
-                # print("current:" + str(self.maps.get_self_coord()))
-                # print("doorloc:" + str(door_loc))
+
                 coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), door_loc, self.maps.get_has_key(), self.maps.get_has_axe())
-                # coordMoves.append('u')
                 unlockTrigger = True
-                # print("astar to door:" + str(coordMoves))
             else:
-                # print("empty key")
-                # print("KEY RANDOM CHOICE")
+
                 neighbours = self.maps.get_neighbours()
                 coordMoves = random.sample(neighbours, 2)
 
         elif(self.maps.get_has_axe()):
 
             if self.maps.get_tree_locations():
-                # print("astar to tree")
-                # print("current:" + str(self.maps.get_self_coord()))
                 tree_loc = next(iter(self.maps.get_tree_locations()))
-                # print("treeloc:" + str(tree_loc))
+
                 coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), tree_loc, self.maps.get_has_key(), self.maps.get_has_axe())
-                # coordMoves.append('c')
+
                 cutTrigger = True
-                # print("astar to tree:" + str(coordMoves))
+
             else:
-                # print("empty axe")
-                # print("AXE RANDOM CHOICE")
                 neighbours = self.maps.get_neighbours()
                 coordMoves = random.sample(neighbours, 2)
         else:
-            # just set coordmoves to random until we find a key
-            # print("ELSE RANDOM CHOICE")
             neighbours = self.maps.get_neighbours()
             coordMoves = random.sample(neighbours, 2)
 
@@ -173,74 +134,61 @@ class Move:
         while(self.maps.get_self_coord() == coordMoves[0]):
             coordMoves.pop(0)
         else:
-            # print("print coordmoves")
-            # print(coordMoves)
             action = coordMoves.pop(0)
-            # print("action")
-            # print(action)
+
             sequence = self.maps.coord2Action(action)
             if(cutTrigger):
                 sequence.append('c')
             if(unlockTrigger):
                 sequence.append('u')
-        # print("sequence")
-        # print(sequence)
-        # print("end seq")
+
         if(pendingMoves.empty()):
             for seq in sequence:
                 pendingMoves.put(seq)
-            # print("coord pending")
-            # print(pendingMoves)
-            # print("end pendingMoves")
+
             tmp = pendingMoves.get()
             actionsSoFar.append(tmp)
-            # print("returning seq:" + str(tmp))
-            # print("pending moves after:" + str(pendingMoves))
+
             return tmp
         else:
-            # print("pendingMoves moves")
-            # print(pendingMoves)
-            # print("end pendingMoves")
             tmp = pendingMoves.get()
             actionsSoFar.append(tmp)
             return tmp
 
-    # def test():
-    #     print("test")
+
     def makeMoveSpiral(self):
 
         coordMoves = spiral((5,5), (0,0))
 
-        print(actionsSoFar)
-        # print(coordMoves.pop(0))
         while(self.maps.get_self_coord() == coordMoves[0]):
             coordMoves.pop(0)
         else:
             sequence = self.maps.coord2Action(coordMoves.pop(0))
-        print("sequence")
-        print(sequence)
-        print("end seq")
+
         if(pendingMoves.empty()):
             for seq in sequence:
                 pendingMoves.put(seq)
-            print("coord moves")
-            print(coordMoves)
-            print("end")
+
             tmp = pendingMoves.get()
             actionsSoFar.append(tmp)
             return tmp
         else:
-            print("coord moves")
-            print(coordMoves)
-            print("end")
+
             tmp = pendingMoves.get()
             actionsSoFar.append(tmp)
             return tmp
 
+
+    #
+    # Returns a random move based on f,l,r
+    #
     def makeMoveRandom(self):
         choices = ['f','l','r']# , 'c', 'u'
         return (random.choice(choices))
 
+    #
+    # Returns a random move based on f,l,r and whether we have already visited
+    #
     def makeMoveUnexplored(self):
         # print("my pos:" + str(maps.get_self_coord()))
         # print("my nei:" + str(maps.get_neighbours()))
@@ -271,6 +219,9 @@ class Move:
             return tmp
 
 
+    #
+    # Spiral algorithm to create a spiral set of coords from the centre
+    #
     def spiral(self, start, pos):
         # x = y = 0
         X = start[0]
@@ -290,7 +241,9 @@ class Move:
             x, y = x+dx, y+dy
         return list
 
-    ###############
+    #
+    # Tests whether an object is passable or not depending on type
+    #
     def isTilePassable(self,tile,hasKey,hasAxe,stone):  ###stone is the number of stone agent has
         if (tile == '~' and stone>0):
             return 'stone'
@@ -309,6 +262,9 @@ class Move:
                       (tile == '>'))
 
 
+    #
+    # Reachability algorithm based on flood fill
+    #
     def IsReachable(self,Map,start,goal,hasKey,hasAxe):  # work when there is no raft
         stone = Map.numStones
         q = queue.Queue()
@@ -365,12 +321,10 @@ class Move:
         return(goal in isConnected)
 
 
-    ###############
-
     def __init__(self, globalMap):
         # print("Move init")
         self.maps = globalMap
-        self.ast = astar3.Astar(self.maps)
+        self.ast = astar.Astar(self.maps)
         self.numMoves = 0
 
 

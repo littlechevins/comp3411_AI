@@ -1,143 +1,152 @@
 #!/usr/bin/env python3
 
-import map2
-import queue
-# map = map2.Map()
+import random
+
 
 class Astar:
 
-    # f(n) = g(n) + h(n)
+    # https://rosettacode.org/wiki/A*_search_algorithm#Python
 
-    gScore = {}
-    fScore = {}
-    INFINITY = 9999999
-    MAX_SIZE = 80
+    # Astar algorithm to find best path to a coordinate
+    # Returns a set of coorinates to follow
+    # Returns a neighbour if nothing can be found to avoid crash
+    def search(self, start, end, hasKey, hasAxe):
+        G = {}
+        F = {}
 
-    searchExhausted = False
+        #Initialize starting values
+        G[start] = 0
+        F[start] = self.heuristic(start, end)
 
-    # def heuristic(a, b):
-    # (x1, y1) = a
-    # (x2, y2) = b
-    # return abs(x1 - x2) + abs(y1 - y2)
-
-    # def a_star_search(graph, start, goal):
-
-
-    # *******************
-    # start = (x,y)
-    # goal  = (x,y)
-    def search(self, start, goal):
-
-
-        # The set of nodes already evaluated
-        closedSet = {}
-
-        # The set of currently discovered nodes that are not evaluated yet.
-        # Initially, only the start node is known.
-        openSet = queue.PriorityQueue()
-        # openSet.put(start, 0)
-
-        # For each node, which node it can most efficiently be reached from.
-        # If a node can be reached from many nodes, cameFrom will eventually contain the
-        # most efficient previous step.
+        closedVertices = set()
+        openVertices = set([start])
         cameFrom = {}
 
-        # For each node, the cost of getting from the start node to that node.
-        # For each node, the total cost of getting from the start node to the goal
-        # by passing by that node. That value is partly known, partly heuristic.
+        while len(openVertices) > 0:
+    		#Get the vertex in the open list with the lowest F score
+            current = None
+            currentFscore = None
+            for pos in openVertices:
+                if current is None or F[pos] < currentFscore:
+                    currentFscore = F[pos]
+                    current = pos
 
-        for y in range(self.MAX_SIZE, -self.MAX_SIZE, -1):
-          for x in range(-self.MAX_SIZE, self.MAX_SIZE):
-            self.gScore[(x,y)] = self.INFINITY
-            self.fScore[(x,y)] = self.INFINITY
+    		#Check if we have reached the goal
+            if current == end:
+    			#Retrace our route backward
+                path = [current]
+                while current in cameFrom:
+                    current = cameFrom[current]
+                    path.append(current)
+                path.reverse()
+                return path, F[end] #Done!
 
-        # print("set g and f scores to infinite")
+    		#Mark the current vertex as closed
+            openVertices.remove(current)
+            closedVertices.add(current)
 
-        # The cost of going from start to start is zero.
-        self.gScore[start] = 0;
-
-        # print("establishing gscore start")
-
-        # For the first node, that value is completely heuristic.
-        self.fScore[start] = self.heuristic_cost_estimate(start, goal)
-        openSet.put(start)
-
-        # print("fscore at start is heuristic to goal")
-
-        while not openSet.empty():
-
-            # print("contents of openset")
-            # print(openSet)
-            # the node in openSet having the lowest fScore[] value
-            current = openSet.get()
-            # print("current:" + str(current))
-            # print("goal:" + str(goal))
-            if current == goal:
-                print("current is goal!!!!!!!!!!!!!")
-                searchExhausted = True
-                return
-                # return reconstruct_path(cameFrom, current)
+    		#Update scores for vertices near the current position
+            for neighbour in self.map.get_neighboursGiven(current):
+                if neighbour in closedVertices:
+                    continue #We have already processed this node exhaustively
 
 
-            closedSet[current] = self.map.get_tile(current[0], current[1])
-
-            # for each neighbor of current
-            print("current:" + str(current))
-            print("neighbours:" + str(self.get_neighbours(current)))
-            for neighbour in self.get_neighbours(current):
-                # print("current is:" + str(current))
-                # print("neighbour is:" + str(neighbour))
-                if neighbour in closedSet:
-                # Ignore the neighbor which is already evaluated.
+                if not self.map.isTilePassable(self.map.get_tile(neighbour[0], neighbour[1]), hasKey, hasAxe, 0):
                     continue
 
-                if neighbour in openSet.queue:	# Discover a new node
-                    continue
-                    # openSet.put(neighbour)
+                candidateG = G[current] + 1 # graph.move_cost(current, neighbour)
 
-                # // The distance from start to a neighbor
-                # //the "dist_between" function may vary as per the solution requirements.
-                tentative_gScore = self.gScore[current] + 1
-                if tentative_gScore >= self.gScore[neighbour]:
-                    continue # This is not a better path.
-                print("tentative score:" + str(tentative_gScore))
+                if neighbour not in openVertices:
+                    openVertices.add(neighbour) #Discovered a new vertex
+                elif candidateG >= G[neighbour]:
+                    continue #This G score is worse than previously found
 
-                # // This path is the best until now. Record it!
+    			#Adopt this G score
                 cameFrom[neighbour] = current
-                self.gScore[neighbour] = tentative_gScore
-                self.fScore[neighbour] = tentative_gScore + self.heuristic_cost_estimate(neighbour, goal)
+                G[neighbour] = candidateG
+                H = self.heuristic(neighbour, end)
+                F[neighbour] = G[neighbour] + H
 
-            if (neighbour not in openSet.queue):
-                openSet.put(neighbour)
+        # raise RuntimeError("A* failed to find a solution")
+        print("FAIL TO FIND ASTAR SOLUTION")
+        return [random.choice(self.map.get_neighboursGiven(current))], 0
 
-        # return failure
-        searchExhausted = True
+        # closedSet = set()
+        #
+        # # openSet = queue.PriorityQueue()
+        # openSet = set([start])
+        #
+        # cameFrom = {}
+        # self.gScore[start] = 0
+        # self.fScore[start] = self.heuristic_cost_estimate(start, goal)
+        # print("fscore start")
+        # print(self.fScore[start])
+        #
+        # while len(openSet) > 0:
+        #
+        #     current = None
+        #     currentFScore = None
+        #     for pos in openSet:
+        #         print("pos")
+        #         print(pos)
+        #         if current is None or self.fScore[pos] < currentFScore:
+        #             print(self.fScore)
+        #             currentFScore = self.fScore[pos]
+        #             current = pos
+        #         print("current fscore" + str(currentFScore))
+        #         print("current" + str(current))
+        #         print("fscorepos" + str(self.fScore[pos]))
+        #
+        #
+        #     if current == goal:
+        #         #Retrace our route backward
+        #         path = [current]
+        #         while current in cameFrom:
+        #             current = cameFrom[current]
+        #             path.append(current)
+        #         path.reverse()
+        #         return path, self.fScore[end] #Done!
+        #
+        #
+        #     openSet.remove(current)
+        #     closedSet.add(current)
+        #
+        #
+        #     for neighbour in self.get_neighbours(current):
+        #
+        #         if neighbour in closedSet:
+        #             continue
+        #
+        #         candidateG = self.gScore[current] + 1
+        #
+        #         if neighbour not in openSet:
+        #             openSet.add(neighbour)
+        #         elif candidateG >= self.gScore[neighbour]:
+        #             continue #This G score is worse than previously found
+        #
+    	# 		#Adopt this G score
+        #         cameFrom[neighbour] = current
+        #         self.gScore[neighbour] = candidateG
+        #         heuristicFound = self.heuristic_cost_estimate(neighbour, goal)
+        #         self.gScore[neighbour] = self.gScore[neighbour] + heuristicFound
+        #
+        # raise RuntimeError("A* failed to find a solution")
 
-    def heuristic_cost_estimate(self, start, goal):
+
+    #
+    # Heuristic function
+    #
+    def heuristic(self, start, goal):
         # we use manhattan distance since it is admissible due to not horizontal movement
-        print("heuristic is:" + str(abs(start[0] - goal[0]) + abs(start[1] - goal[1])))
         return abs(start[0] - goal[0]) + abs(start[1] - goal[1])
 
-    def get_neighbours(self, block):
-        neighbours = []
-        # for i in range(0, 3):
-        neighbours.append((block[0]+1, block[1]))
-        neighbours.append((block[0]-1, block[1]))
-        neighbours.append((block[0], block[1]+1))
-        neighbours.append((block[0], block[1]-1))
-        return neighbours
-
-    # def reconstruct_path(cameFrom, current)
-    #     total_path := {current}
-    #     while current in cameFrom.Keys:
-    #         current := cameFrom[current]
-    #         total_path.append(current)
-    #     return total_path
 
 
     def __init__(self, map): # , start, goal
-
+        # print("init astar3")
         self.map = map
+        # self.gScore = {}
+        # self.fScore = {}
         # self.start = start
         # self.goal = goal
 

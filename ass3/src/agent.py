@@ -8,28 +8,46 @@
 # created by Leo Hoare
 # with slight modifications by Alan Blair
 
+# Modified by Kevin Luo
+
+##MAKEFILE##
+# I wasn't able to create a makefile for an agent executable unless I hardcoded a port in.
+# You can run my agent using: 'python3 agent.py -p *PORT*'
+
+# PROGRAM DESCRIPTION
+
+# Our program first creates an instance of map and updates its current view and location depending on its last move. On initiation, these do nothing. We then create an instance of our move class and call a function to move our character. In our move function, we randomly step around 1000 times to explore the map. We avoid water during this step. With our surroundings explored, we use astar to nagivate to a door/tree if we have the correct tools. We then perform our action on the object and continue on. Our astar algorithm has a special case where if the object is not passable, we go to the next avaliable neighbour.
+#
+# Our data structure for the global map is a hashmap containing coordinates and the object at its location: eg {(x,y), 'k'}. We also store hashmaps of notable objects, ie, keys, doors, stones, etc
+#
+# My move class has a pendingMoves queue which we add or delete from so that new instances of possible moves do not affect the queued up moves.
+#
+# We implemented a floodfill algorithm for better nagivation but this was not used due to lack of avaliable time.
+#
+# Overall my program does not yet successfully nagivate water at a passable rate. This was due to time constraints
+
+
+
+
 import sys
 import socket
 
-import map2
+import map
 import move
 
 
 # declaring visible grid to agent
 view = [['' for _ in range(5)] for _ in range(5)]
-maps = map2.Map()
+maps = map.Map()
 moves = move.Move(maps)
-# pos = [0,0]
 
 
-# function to take get action from AI or user
+# Returns a action for the agent to perform
 def get_action(view, lastAction):
 
-    ## REPLACE THIS WITH AI CODE TO CHOOSE ACTION ##
-    # print("before loc:" + str(maps.get_self_coord()))
-    # print("updating move:" + str(lastAction))
+
     maps.mov_update(lastAction)
-    # print("current loc:" + str(maps.get_self_coord()))
+
     maps.map_update(view)
 
     maps.print_map()
@@ -46,10 +64,6 @@ def print_grid(view):
     print('+-----+')
 
 if __name__ == "__main__":
-
-    # pos[0] = 0
-    # pos[1] = 0
-
 
     # checks for correct amount of arguments
     if len(sys.argv) != 3:
