@@ -17,20 +17,20 @@ class Move:
 
     def moveChar(self):
 
-        print(self.maps.get_explored_locations())
+        # print(self.maps.get_explored_locations())
         # print("next unexploreed move:" + str(makeMoveUnexplored()))
         # return makeMoveRandom()
         # return makeMoveSpiral()
 
-        print("Object in front:" + self.maps.get_object_front()[0] + ".")
-        print("key hashmap:" + str(self.maps.get_key_locations()))
-        print("tree hashmap:" + str(self.maps.get_tree_locations()))
-        print("door hashmap:" + str(self.maps.get_door_locations()))
-        print("axe hashmap:" + str(self.maps.get_axe_locations()))
-        print("stone hashmap:" + str(self.maps.get_stone_locations()))
-        print("treasure hashmap:" + str(self.maps.get_treasure_locations()))
-        print("has key:" + str(self.maps.get_has_key()))
-        print("has axe:" + str(self.maps.get_has_axe()))
+        # print("Object in front:" + self.maps.get_object_front()[0] + ".")
+        # print("key hashmap:" + str(self.maps.get_key_locations()))
+        # print("tree hashmap:" + str(self.maps.get_tree_locations()))
+        # print("door hashmap:" + str(self.maps.get_door_locations()))
+        # print("axe hashmap:" + str(self.maps.get_axe_locations()))
+        # print("stone hashmap:" + str(self.maps.get_stone_locations()))
+        # print("treasure hashmap:" + str(self.maps.get_treasure_locations()))
+        # print("has key:" + str(self.maps.get_has_key()))
+        # print("has axe:" + str(self.maps.get_has_axe()))
 
 
         # final_string = self.makeMoveUnexplored()
@@ -55,13 +55,14 @@ class Move:
         # print("fin test passable")
 
 
-        if(self.numMoves < 300):
+        # full explore map without doing anything undoable
+        if(self.numMoves < 1000):
             print("random move:" + str(self.numMoves))
             final_string = self.makeMoveRandom()
         else:
             final_string = self.makeMoveSeekNGo()
 
-        print("final string is:" + str(final_string))
+        # print("final string is:" + str(final_string))
 
 
 
@@ -90,7 +91,6 @@ class Move:
                 pendingMoves.queue.clear()
                 pendingMoves.put('f')
         self.numMoves = self.numMoves + 1
-        print("RETURNING STRING TO RUN:" + str(final_string[0]))
         return final_string[0]
 
         # not used vvv
@@ -134,26 +134,30 @@ class Move:
             if self.maps.get_door_locations():
                 # print(self.maps.get_door_locations())
                 door_loc = next(iter(self.maps.get_door_locations()))
-                print("astar to door")
-                print("current:" + str(self.maps.get_self_coord()))
-                print("doorloc:" + str(door_loc))
+                # print("astar to door")
+                # print("current:" + str(self.maps.get_self_coord()))
+                # print("doorloc:" + str(door_loc))
                 coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), door_loc, self.maps.get_has_key(), self.maps.get_has_axe())
                 # coordMoves.append('u')
                 unlockTrigger = True
-                print("astar to door:" + str(coordMoves))
+                # print("astar to door:" + str(coordMoves))
             else:
-                print("empty key")
-                print("KEY RANDOM CHOICE")
+                # print("empty key")
+                # print("KEY RANDOM CHOICE")
                 neighbours = self.maps.get_neighbours()
                 coordMoves = random.sample(neighbours, 2)
 
         elif(self.maps.get_has_axe()):
+
             if self.maps.get_tree_locations():
+                # print("astar to tree")
+                # print("current:" + str(self.maps.get_self_coord()))
                 tree_loc = next(iter(self.maps.get_tree_locations()))
+                # print("treeloc:" + str(tree_loc))
                 coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), tree_loc, self.maps.get_has_key(), self.maps.get_has_axe())
                 # coordMoves.append('c')
                 cutTrigger = True
-                print("astar to tree:" + str(coordMoves))
+                # print("astar to tree:" + str(coordMoves))
             else:
                 # print("empty axe")
                 # print("AXE RANDOM CHOICE")
@@ -169,19 +173,19 @@ class Move:
         while(self.maps.get_self_coord() == coordMoves[0]):
             coordMoves.pop(0)
         else:
-            print("print coordmoves")
-            print(coordMoves)
+            # print("print coordmoves")
+            # print(coordMoves)
             action = coordMoves.pop(0)
-            print("action")
-            print(action)
+            # print("action")
+            # print(action)
             sequence = self.maps.coord2Action(action)
             if(cutTrigger):
                 sequence.append('c')
             if(unlockTrigger):
                 sequence.append('u')
-        print("sequence")
-        print(sequence)
-        print("end seq")
+        # print("sequence")
+        # print(sequence)
+        # print("end seq")
         if(pendingMoves.empty()):
             for seq in sequence:
                 pendingMoves.put(seq)
@@ -190,8 +194,8 @@ class Move:
             # print("end pendingMoves")
             tmp = pendingMoves.get()
             actionsSoFar.append(tmp)
-            print("returning seq:" + str(tmp))
-            print("pending moves after:" + str(pendingMoves))
+            # print("returning seq:" + str(tmp))
+            # print("pending moves after:" + str(pendingMoves))
             return tmp
         else:
             # print("pendingMoves moves")
@@ -364,7 +368,7 @@ class Move:
     ###############
 
     def __init__(self, globalMap):
-        print("Move init")
+        # print("Move init")
         self.maps = globalMap
         self.ast = astar3.Astar(self.maps)
         self.numMoves = 0

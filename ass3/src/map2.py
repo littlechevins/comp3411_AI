@@ -168,21 +168,21 @@ class Map:
         # i was just assigning np to nothing so it was broken before :(
         rotated_view = view
         if(self.direction == EAST):
-            print("rotating east")
+            # print("rotating east")
             rotated_view = np.rot90(view, 3)
         elif(self.direction == SOUTH):
-            print("rotating south")
+            # print("rotating south")
             rotated_view = np.rot90(view, 2)
         elif(self.direction == WEST):
-            print("rotating west")
+            # print("rotating west")
             rotated_view = np.rot90(view, 1)
         # else:
         #     raise ValueError("Direction not certain/unknown")
 
         # update the map a block at a time
 
-        print(self.locX)
-        print(self.locY)
+        # print(self.locX)
+        # print(self.locY)
 
         for i in range(0, 5):
           for j in range(0, 5):
@@ -272,10 +272,10 @@ class Map:
 
 
         elif(action == self.LEFT):
-            print("left action")
+            # print("left action")
             self.rotateDirection(self.LEFT)
         elif(action == self.RIGHT):
-            print("right action")
+            # print("right action")
             self.rotateDirection(self.RIGHT)
         # elif(action == CHOP):
         #
@@ -339,13 +339,13 @@ class Map:
         # print("Block in front is:" + blockAhead + ".")
 
         if(blockAhead == self.WALL):
-            print("Wall detected")
+            # print("Wall detected")
             return 1
         elif(blockAhead == self.TREE):
-            print("Tree detected")
+            # print("Tree detected")
             return 1
         elif(blockAhead == self.DOOR):
-            print("Door detected")
+            # print("Door detected")
             return 1
 
         return 0
@@ -470,12 +470,11 @@ class Map:
                 action.append('l')
                 action.append('f')
         elif(self.locY == 0 and self.locX == 0):
-                print("first loc 0,0")
+                # print("first loc 0,0")
                 action.append('l')
                 action.append('f')
                 # print(action)
         else:
-            print("FOUND NONE???")
             return []
         return action
 
@@ -586,7 +585,7 @@ class Map:
 
     def __init__(self):
 
-        print("Generating map")
+        # print("Generating map")
         # self.map = np.full((MAX_SIZE * 2, MAX_SIZE * 2), UNEXPLORED_BLOCK)
 
         self.map = {}
@@ -596,8 +595,8 @@ class Map:
             self.map[(x,y)] = self.UNEXPLORED_BLOCK
 
         # print(self.map)
-        print("Printing map")
-        self.print_map()
+        # print("Printing map")
+        # self.print_map()
 
         direction = NORTH
 

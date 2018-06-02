@@ -61,9 +61,9 @@ class Astar:
                 H = self.heuristic(neighbour, end)
                 F[neighbour] = G[neighbour] + H
 
-        # raise RuntimeError("A* failed to find a solution")
-        print("FAIL TO FIND ASTAR SOLUTION")
-        return [], 0
+        raise RuntimeError("A* failed to find a solution")
+        # print("FAIL TO FIND ASTAR SOLUTION")
+        # return [], 0
 
         # closedSet = set()
         #
@@ -150,7 +150,7 @@ class Astar:
 
 
     def __init__(self, map): # , start, goal
-        print("init astar3")
+        # print("init astar3")
         self.map = map
         # self.gScore = {}
         # self.fScore = {}

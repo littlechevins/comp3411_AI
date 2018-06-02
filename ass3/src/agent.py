@@ -30,7 +30,6 @@ def get_action(view, lastAction):
     # print("updating move:" + str(lastAction))
     maps.mov_update(lastAction)
     # print("current loc:" + str(maps.get_self_coord()))
-
     maps.map_update(view)
 
     maps.print_map()
