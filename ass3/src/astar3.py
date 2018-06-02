@@ -44,7 +44,9 @@ class Astar:
                 if neighbour in closedVertices:
                     continue #We have already processed this node exhaustively
 
+                print("testing passable:" + str(map.get_tile(neighbour)))
                 if (not self.map.isTilePassable(neighbour, hasKey, hasAxe, 0)):
+                    print("not passable")
                   continue
 
                 candidateG = G[current] + 1 # graph.move_cost(current, neighbour)
