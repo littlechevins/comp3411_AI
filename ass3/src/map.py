@@ -67,6 +67,7 @@ class Map:
 
     hasKey = False
     hasAxe = False
+    hasTreasure = False
     numStones = 0
 
     locX = 0
@@ -471,6 +472,12 @@ class Map:
 
     def get_tile(self, x, y):
         return self.map[(x,y)]
+
+    def get_has_treasure(self):
+        return self.hasTreasure
+
+    def set_has_treasure(self, set):
+        self.hasTreasure = set
 
     def get_self_coord(self):
         return (self.locX, self.locY)

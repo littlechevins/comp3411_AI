@@ -69,7 +69,9 @@ class Astar:
 
         # raise RuntimeError("A* failed to find a solution")
         print("FAIL TO FIND ASTAR SOLUTION")
-        return [random.choice(self.map.get_neighboursGiven(current))], 0
+        fail_return = [random.choice(self.map.get_neighboursGiven(current))]
+        print("Returning:" + str(fail_return))
+        return fail_return, 0
 
         # closedSet = set()
         #

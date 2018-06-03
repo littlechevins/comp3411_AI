@@ -21,6 +21,8 @@
 # Our data structure for the global map is a hashmap containing coordinates and the object at its location: eg {(x,y), 'k'}. We also store hashmaps of notable objects, ie, keys, doors, stones, etc
 #
 # My move class has a pendingMoves queue which we add or delete from so that new instances of possible moves do not affect the queued up moves.
+
+# Our agent will always look for a way to get to treasure using astar if it sees a treasure on the map. If astar fails then we reutrn a neasrest neighbour and try again. If we have collected the treasure then we will astar back to our starting position
 #
 # We implemented a floodfill algorithm for better nagivation but this was not used due to lack of avaliable time.
 #

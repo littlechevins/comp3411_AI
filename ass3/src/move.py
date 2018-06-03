@@ -48,6 +48,7 @@ class Move:
                 self.maps.set_has_axe(True)
             elif(self.maps.get_object_front()[0] == '$'):
                 self.maps.remove_special_object('$', self.maps.get_object_front()[1])
+                self.maps.set_has_treasure(True)
         elif(final_string == 'c'):
             if(self.maps.get_object_front()[0] == 'T'):
                 self.maps.remove_special_object('T', self.maps.get_object_front()[1])
@@ -109,6 +110,7 @@ class Move:
 
                 coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), door_loc, self.maps.get_has_key(), self.maps.get_has_axe())
                 unlockTrigger = True
+                # print("axe")
             else:
 
                 neighbours = self.maps.get_neighbours()
@@ -122,21 +124,36 @@ class Move:
                 coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), tree_loc, self.maps.get_has_key(), self.maps.get_has_axe())
 
                 cutTrigger = True
+                # print("tree")
 
             else:
                 neighbours = self.maps.get_neighbours()
                 coordMoves = random.sample(neighbours, 2)
+
+        elif(self.maps.get_has_treasure()):
+            # go back home
+            pendingMoves.queue.clear()
+            coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), (0,0), self.maps.get_has_key(), self.maps.get_has_axe())
+            # print("home")
+
+        elif(self.maps.get_treasure_locations()):
+            treasure_loc = next(iter(self.maps.get_treasure_locations()))
+            coordMoves, costSoFar = self.ast.search(self.maps.get_self_coord(), treasure_loc, self.maps.get_has_key(), self.maps.get_has_axe())
+            # print("treasure")
         else:
             neighbours = self.maps.get_neighbours()
             coordMoves = random.sample(neighbours, 2)
-
+            # print("rand")
 
         while(self.maps.get_self_coord() == coordMoves[0]):
             coordMoves.pop(0)
         else:
             action = coordMoves.pop(0)
-
+            # print(action)
             sequence = self.maps.coord2Action(action)
+            # print(sequence)
+            if(not sequence):
+                sequence = self.makeMoveRandom()
             if(cutTrigger):
                 sequence.append('c')
             if(unlockTrigger):
